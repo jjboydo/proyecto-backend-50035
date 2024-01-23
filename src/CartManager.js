@@ -1,12 +1,31 @@
 import fs from 'fs/promises'
 import ProductManager from './ProductManager.js'
+import { fileURLToPath } from 'url'
+import path from "path"
 
-const productManager = new ProductManager("./src/products.json")
+const __fliename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__fliename)
+
+const productManager = new ProductManager(path.join(__dirname, "./products.json"))
 
 export default class CartManager {
     constructor(path) {
         this.path = path
+        this.createFile()
         this.loadCarts()
+    }
+
+    async createFile() {
+        try {
+            await fs.access(this.path, fs.constants.F_OK)
+        } catch (error) {
+            if (error.code === "ENOENT") {
+                await fs.writeFile(this.path, "[]")
+                console.log("Product file created:", this.path)
+            } else {
+                throw new Error("Error accessing product file:", error)
+            }
+        }
     }
 
     async loadCarts() {

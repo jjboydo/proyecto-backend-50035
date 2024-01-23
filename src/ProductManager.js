@@ -31,8 +31,8 @@ export default class ProductManager {
     }
 
     #validateProduct(product) {
-        const { title, description, price, thumbnail, code, stock } = product
-        const isValid = title && description && price && thumbnail && code && stock
+        const { title, description, price, code, stock, category } = product
+        const isValid = title && description && price && code && stock && category
         if (!isValid) throw new Error("The product is not valid")
     }
 
@@ -54,7 +54,14 @@ export default class ProductManager {
             const newProductId = maxProductId + 1
             const newProduct = {
                 id: newProductId,
-                ...product
+                title: product.title,
+                description: product.description,
+                code: product.code,
+                price: product.price,
+                status: product.status === undefined ? true : product.status,
+                stock: product.stock,
+                category: product.category,
+                thumbnails: product.thumbnails || [],
             }
             this.products.push(newProduct)
             await this.writeToFile(this.products, this.path)
@@ -88,6 +95,7 @@ export default class ProductManager {
             if (productExists === -1) {
                 throw new Error("Product Not found")
             }
+            delete fieldsToUpdate.id
             this.#validateCode(fieldsToUpdate.code)
             Object.assign(this.products[productExists], fieldsToUpdate)
             await this.writeToFile(this.products, this.path)
