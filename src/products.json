@@ -112,8 +112,8 @@
 	},
 	{
 		"id": 10,
-		"title": "Producto modificado",
-		"description": "Este es un producto que fue modificado",
+		"title": "producto prueba J",
+		"description": "Este es un producto prueba J",
 		"code": "abc123J",
 		"price": 300,
 		"status": true,

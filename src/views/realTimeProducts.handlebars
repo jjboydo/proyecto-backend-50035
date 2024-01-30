@@ -1,0 +1,14 @@
+<h1>Lista de productos con websockets</h1>
+<div id="products-container" style="display: flex; flex-wrap:wrap; gap: 20px;">
+    {{#each products}}
+    <div class="card">
+        <p><strong>Nombre del producto:</strong> {{this.title}}</p>
+        <p><strong>Descripción:</strong> {{this.description}}</p>
+        <p><strong>Precio:</strong> ${{this.price}}</p>
+        <p><strong>Código:</strong> {{this.code}}</p>
+    </div>
+    {{/each}}
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realTimeProducts.js"></script>
