@@ -6,12 +6,7 @@ import cartsRouter from "./routes/carts.router.js"
 import viewsRouter from "./routes/views.router.js"
 
 import { Server } from "socket.io"
-
-import { fileURLToPath } from 'url'
-import path from "path"
-
-const __fliename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__fliename)
+import __dirname from "./utils.js"
 
 const PORT = 8080
 const app = express()
@@ -33,14 +28,8 @@ app.engine("handlebars", handlebars.engine())
 app.set("views", __dirname + "/views")
 app.set("view engine", "handlebars")
 app.use(express.static(__dirname + "/public"))
-app.use("/", viewsRouter(socketServer))
+app.use("/", viewsRouter)
 
 socketServer.on("connection", socket => {
     console.log("Nuevo cliente conectado")
-    socket.on("message", data => {
-        console.log(data)
-    })
 })
-
-
-// app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`))

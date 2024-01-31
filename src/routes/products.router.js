@@ -1,15 +1,13 @@
 import express from "express"
 import ProductManager from '../ProductManager.js'
-import { fileURLToPath } from 'url'
-import path from "path"
+import path from 'path'
+import __dirname from "../utils.js"
 
 export default (socketServer) => {
-    const __fliename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__fliename)
 
     const router = express.Router()
 
-    const productManager = new ProductManager(path.join(__dirname, "../products.json"))
+    const productManager = new ProductManager(path.join(__dirname, "./products.json"))
 
     // ENDPOINTS
 
@@ -32,10 +30,10 @@ export default (socketServer) => {
             const newProduct = req.body
             await productManager.addProduct(newProduct)
             const products = await productManager.getProducts()
-            socketServer.emit('product_refresh', products)
+            socketServer.emit('product_updated', products)
             res.status(200).json({ success: "Product added correctly!" })
         } catch (error) {
-            res.status(400).json({ error: `Adding product. ${error}` })
+            res.status(500).json({ error: `Adding product. ${error}` })
         }
     })
 
@@ -45,10 +43,10 @@ export default (socketServer) => {
             const updatedProduct = req.body
             await productManager.updateProduct(productId, updatedProduct)
             const products = await productManager.getProducts()
-            socketServer.emit('product_refresh', products)
+            socketServer.emit('product_updated', products)
             res.status(200).json({ success: `Product ${productId} successfully modified!` })
         } catch (error) {
-            res.status(400).json({ error: `Updating product. ${error}` })
+            res.status(500).json({ error: `Updating product. ${error}` })
         }
     })
 
@@ -57,10 +55,10 @@ export default (socketServer) => {
             const productId = parseInt(req.params.pid)
             await productManager.deleteProduct(productId)
             const products = await productManager.getProducts()
-            socketServer.emit('product_refresh', products)
+            socketServer.emit('product_updated', products)
             res.status(200).json({ success: `Product ${productId} deleted successfully!` })
         } catch (error) {
-            res.status(400).json({ error: `Deleting product. ${error}` })
+            res.status(500).json({ error: `Deleting product. ${error}` })
         }
     })
 

@@ -1,10 +1,7 @@
 import fs from 'fs/promises'
 import ProductManager from './ProductManager.js'
-import { fileURLToPath } from 'url'
-import path from "path"
-
-const __fliename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__fliename)
+import path from 'path'
+import __dirname from "./utils.js"
 
 const productManager = new ProductManager(path.join(__dirname, "./products.json"))
 

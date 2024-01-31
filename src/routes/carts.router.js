@@ -1,14 +1,11 @@
 import express from "express"
 import CartManager from '../CartManager.js'
-import { fileURLToPath } from 'url'
-import path from "path"
-
-const __fliename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__fliename)
+import path from 'path'
+import __dirname from "../utils.js"
 
 const router = express.Router()
 
-const cartManager = new CartManager(path.join(__dirname, "../carts.json"))
+const cartManager = new CartManager(path.join(__dirname, "./carts.json"))
 
 // ENDPOINTS
 
@@ -17,7 +14,7 @@ router.post("/", async (req, res) => {
         await cartManager.addCart()
         res.status(200).json({ success: "Cart added correctly!" })
     } catch (error) {
-        res.status(400).json({ error: `Adding new cart. ${error}` })
+        res.status(500).json({ error: `Adding new cart. ${error}` })
     }
 })
 
@@ -35,7 +32,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
         await cartManager.addProductToCart(cartId, productId)
         res.status(200).json({ success: `Product ${productId} added to cart ${cartId} successfully!` })
     } catch (error) {
-        res.status(400).json({ error: `Adding new product to cart. ${error}` })
+        res.status(500).json({ error: `Adding new product to cart. ${error}` })
     }
 })
 

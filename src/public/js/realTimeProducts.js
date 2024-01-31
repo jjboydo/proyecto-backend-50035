@@ -1,6 +1,5 @@
 
 const socket = io()
-socket.emit("message", "Hola desde websocket")
 
 const createProductElement = (product) => {
     const productElement = document.createElement('div')
@@ -12,14 +11,13 @@ const createProductElement = (product) => {
     <p><strong>Código:</strong> ${product.code}</p>
   `
     return productElement
-};
+}
 
-socket.on('product_refresh', (products) => {
-    console.log('Products refresh')
+socket.on('product_updated', (products) => {
     const productsContainer = document.getElementById('products-container')
     productsContainer.innerHTML = ''
     products.forEach((product) => {
         const productElement = createProductElement(product)
         productsContainer.appendChild(productElement)
-    });
-});
+    })
+})

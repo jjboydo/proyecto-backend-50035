@@ -1,36 +1,28 @@
 import express from "express"
 import ProductManager from "../ProductManager.js"
-import { fileURLToPath } from 'url'
-import path from "path"
+import path from 'path'
+import __dirname from "../utils.js"
 
-export default (socketServer) => {
+const productManager = new ProductManager(path.join(__dirname, "./products.json"))
 
-    const __fliename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__fliename)
+const router = express.Router()
 
-    const productManager = new ProductManager(path.join(__dirname, "../products.json"))
+// VISTAS
 
-
-    const router = express.Router()
-
-    // VISTAS
-
-    router.get("/", async (req, res) => {
-        const products = await productManager.getProducts()
-        res.render("home", {
-            style: "home.css",
-            products
-        })
+router.get("/", async (req, res) => {
+    const products = await productManager.getProducts()
+    res.render("home", {
+        style: "home.css",
+        products
     })
+})
 
-    router.get("/realtimeproducts", async (req, res) => {
-        const products = await productManager.getProducts()
-        res.render("realTimeProducts", {
-            style: "home.css",
-            products
-        })
-        // socketServer.emit('product_refresh', products)
+router.get("/realtimeproducts", async (req, res) => {
+    const products = await productManager.getProducts()
+    res.render("realTimeProducts", {
+        style: "home.css",
+        products
     })
+})
 
-    return router
-}
+export default router
