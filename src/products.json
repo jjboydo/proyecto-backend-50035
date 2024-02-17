@@ -109,19 +109,5 @@
 		"status": true,
 		"category": "Categoría 3",
 		"thumbnails": []
-	},
-	{
-		"id": 10,
-		"title": "producto prueba J",
-		"description": "Este es un producto prueba J",
-		"code": "abc123J",
-		"price": 300,
-		"status": true,
-		"stock": 21,
-		"category": "Categoría 3",
-		"thumbnails": [
-			"public/imagen9.jpg",
-			"public/imagen10.jpg"
-		]
 	}
 ]

@@ -1,5 +1,6 @@
 import express from "express"
 import handlebars from "express-handlebars"
+import mongoose from "mongoose"
 
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
@@ -12,6 +13,15 @@ const PORT = 8080
 const app = express()
 const httpServer = app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`))
 
+// Conexión a base de datos
+mongoose.connect("mongodb+srv://juanjoo1020:QRgbB9YyUalDcDcr@codercluster.bsktuqe.mongodb.net/ecommerce?retryWrites=true&w=majority")
+    .then(() => {
+        console.log("Conectado a la base de datos")
+    })
+    .catch(error => {
+        console.error("Error al conectarse a la base de datos", error)
+    })
+
 // Middlewares
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -21,7 +31,6 @@ const socketServer = new Server(httpServer)
 // Rutas
 app.use('/api/products', productsRouter(socketServer))
 app.use('/api/carts', cartsRouter)
-
 
 // Handlebars
 app.engine("handlebars", handlebars.engine())
