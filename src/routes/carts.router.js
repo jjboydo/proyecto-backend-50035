@@ -1,11 +1,9 @@
 import express from "express"
-import CartManager from '../CartManager.js'
-import path from 'path'
-import __dirname from "../utils.js"
+import CartManager from '../dao/mongoose/CartManager.js'
 
 const router = express.Router()
 
-const cartManager = new CartManager(path.join(__dirname, "./carts.json"))
+const cartManager = new CartManager()
 
 // ENDPOINTS
 
@@ -19,7 +17,7 @@ router.post("/", async (req, res) => {
 })
 
 router.get("/:cid", async (req, res) => {
-    const cartId = parseInt(req.params.cid)
+    const cartId = req.params.cid
     const cart = await cartManager.getCartById(cartId)
     if (!cart) res.status(404).json({ error: `Cart ${cartId} does not exist!` })
     res.json(cart)
@@ -27,8 +25,8 @@ router.get("/:cid", async (req, res) => {
 
 router.post("/:cid/product/:pid", async (req, res) => {
     try {
-        const cartId = parseInt(req.params.cid)
-        const productId = parseInt(req.params.pid)
+        const cartId = req.params.cid
+        const productId = req.params.pid
         await cartManager.addProductToCart(cartId, productId)
         res.status(200).json({ success: `Product ${productId} added to cart ${cartId} successfully!` })
     } catch (error) {

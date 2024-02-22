@@ -5,6 +5,7 @@ import mongoose from "mongoose"
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
 import viewsRouter from "./routes/views.router.js"
+import messagesModel from "./dao/models/messages.model.js"
 
 import { Server } from "socket.io"
 import __dirname from "./utils.js"
@@ -41,4 +42,15 @@ app.use("/", viewsRouter)
 
 socketServer.on("connection", socket => {
     console.log("Nuevo cliente conectado")
+
+    socket.on('message', async (data) => {
+        await messagesModel.create({ user: data.user, message: data.message })
+        const messages = await messagesModel.find()
+        socketServer.emit('messageLogs', messages)
+    })
+
+    socket.on('showMessages', async () => {
+        const messages = await messagesModel.find()
+        socketServer.emit('messageLogs', messages)
+    })
 })

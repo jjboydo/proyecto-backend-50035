@@ -1,5 +1,5 @@
 import express from "express"
-import ProductManager from '../ProductManager.js'
+import ProductManager from '../dao/mongoose/ProductManager.js'
 import path from 'path'
 import __dirname from "../utils.js"
 
@@ -7,7 +7,7 @@ export default (socketServer) => {
 
     const router = express.Router()
 
-    const productManager = new ProductManager(path.join(__dirname, "./products.json"))
+    const productManager = new ProductManager()
 
     // ENDPOINTS
 
@@ -19,7 +19,7 @@ export default (socketServer) => {
     })
 
     router.get("/:pid", async (req, res) => {
-        const productId = parseInt(req.params.pid)
+        const productId = req.params.pid
         const product = await productManager.getProductsById(productId)
         if (!product) res.status(404).json({ error: `Product ${productId} does not exist!` })
         res.json(product)
@@ -39,7 +39,7 @@ export default (socketServer) => {
 
     router.put("/:pid", async (req, res) => {
         try {
-            const productId = parseInt(req.params.pid)
+            const productId = req.params.pid
             const updatedProduct = req.body
             await productManager.updateProduct(productId, updatedProduct)
             const products = await productManager.getProducts()
@@ -52,7 +52,7 @@ export default (socketServer) => {
 
     router.delete("/:pid", async (req, res) => {
         try {
-            const productId = parseInt(req.params.pid)
+            const productId = req.params.pid
             await productManager.deleteProduct(productId)
             const products = await productManager.getProducts()
             socketServer.emit('product_updated', products)
