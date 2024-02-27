@@ -36,7 +36,7 @@ export default class CartManager {
             console.log('Invalid cart ID')
             return
         }
-        const cartExists = await cartsModel.findById(cartId)
+        const cartExists = await cartsModel.findById(cartId).populate("products.product")
         return cartExists
     }
 
@@ -62,6 +62,55 @@ export default class CartManager {
             console.log(`Producto agregado al carrito ${cartId} correctamente!`)
         } catch (error) {
             throw new Error(error.message)
+        }
+    }
+
+    async deleteProductFromCart(cartId, productId) {
+        try {
+            const cart = await this.getCartById(cartId)
+            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+
+            // await this.#productExists(productId)
+
+            cart.products.pull({ product: productId })
+            await cart.save()
+            console.log(`Producto eliminado del carrito ${cartId} correctamente!`)
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+
+    async updateProductFromCart(cartId, productId, quantity) {
+        try {
+            const cart = await this.getCartById(cartId)
+            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+
+            await cartsModel.updateOne({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
+            console.log("Cantidad actualizada correctamente!")
+
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+
+    async updateCart(cartId, updatedProducts) {
+        try {
+            const cart = await this.getCartById(cartId)
+            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+
+            await cartsModel.updateOne({ _id: cartId }, { $set: { products: updatedProducts } })
+            console.log("Carrito actualizado correctamente!")
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+
+    async deleteCart(cartId) {
+        try {
+            await cartsModel.updateOne({ _id: cartId }, { $set: { products: [] } })
+            console.log("Carrito eliminado correctamente!")
+        } catch (error) {
+            throw new Error(`Cart ${cartId} does not exist!`)
         }
     }
 }

@@ -12,10 +12,32 @@ export default (socketServer) => {
     // ENDPOINTS
 
     router.get("/", async (req, res) => {
-        const limit = parseInt(req.query.limit)
-        const products = await productManager.getProducts()
-        const getProducts = (!isNaN(limit) && limit > 0) ? products.slice(0, limit) : products
-        res.json(getProducts)
+        try {
+            const limit = parseInt(req.query.limit)
+            const page = parseInt(req.query.page)
+            const query = req.query.query
+            const sort = req.query.sort
+            const products = await productManager.getProducts(limit, page, query, sort)
+            const productsResponse = {
+                status: "success",
+                payload: products.docs,
+                totalPages: products.totalPages,
+                page: products.page,
+                hasPrevPage: products.hasPrevPage,
+                hasNextPage: products.hasNextPage,
+                prevPage: products.prevPage,
+                nextPage: products.nextPage,
+                prevLink: products.prevLink,
+                nextLink: products.nextLink
+            }
+            res.json(productsResponse)
+        } catch (error) {
+            const productsResponse = {
+                status: "error",
+                payload: []
+            }
+            res.status(500).json(productsResponse)
+        }
     })
 
     router.get("/:pid", async (req, res) => {

@@ -31,4 +31,10 @@ router.get("/chat", async (req, res) => {
     })
 })
 
+router.get("/products", async (req, res) => {
+    res.render("products", {
+        style: "home.css"
+    })
+})
+
 export default router

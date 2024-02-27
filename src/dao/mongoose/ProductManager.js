@@ -33,9 +33,16 @@ export default class ProductManager {
         }
     }
 
-    async getProducts() {
+    async getProducts(limit, page, query, sort) {
         try {
-            let result = await productsModel.find()
+            isNaN(limit) ? limit = 10 : limit
+            isNaN(page) ? page = 1 : page
+            query ? query = { category: query } : {}
+            // OPTIMIZAR ESTO
+            let result = sort ? await productsModel.paginate(query, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await productsModel.paginate({}, { limit: limit, page: page, lean: true })
+            result.prevLink = result.hasPrevPage ? `http://localhost:8080/api/products?page=${result.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : '';
+            result.nextLink = result.hasNextPage ? `http://localhost:8080/api/products?page=${result.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : '';
+            result.isValid = !(page <= 0 || page > result.totalPages)
             return result
         } catch (error) {
             console.error('Error getting products: ', error)

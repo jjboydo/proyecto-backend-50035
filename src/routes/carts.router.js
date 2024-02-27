@@ -34,4 +34,48 @@ router.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
+router.delete("/:cid/product/:pid", async (req, res) => {
+    try {
+        const cartId = req.params.cid
+        const productId = req.params.pid
+        await cartManager.deleteProductFromCart(cartId, productId)
+        res.status(200).json({ success: `Product ${productId} removed from cart ${cartId} successfully!` })
+    } catch (error) {
+        res.status(500).json({ error: `Deleting product from cart. ${error}` })
+    }
+})
+
+router.put("/:cid", async (req, res) => {
+    try {
+        const cartId = req.params.cid
+        const updatedProducts = req.body
+        await cartManager.updateCart(cartId, updatedProducts.products)
+        res.status(200).json({ success: `Products updated in cart ${cartId} successfully!` })
+    } catch (error) {
+        res.status(500).json({ error: `Updating cart. ${error}` })
+    }
+})
+
+router.put("/:cid/product/:pid", async (req, res) => {
+    try {
+        const cartId = req.params.cid
+        const productId = req.params.pid
+        const newQuantity = req.body
+        await cartManager.updateProductFromCart(cartId, productId, newQuantity.quantity)
+        res.status(200).json({ success: `Product ${productId} from cart ${cartId} updated successfully!` })
+    } catch (error) {
+        res.status(500).json({ error: `Updating product in cart. ${error}` })
+    }
+})
+
+router.delete("/:cid", async (req, res) => {
+    try {
+        const cartId = req.params.cid
+        await cartManager.deleteCart(cartId)
+        res.status(200).json({ success: `Cart ${cartId} removed successfully!` })
+    } catch (error) {
+        res.status(500).json({ error: `Deleting cart. ${error}` })
+    }
+})
+
 export default router
