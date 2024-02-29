@@ -33,17 +33,31 @@ export default class ProductManager {
         }
     }
 
-    async getProducts(limit, page, query, sort) {
+    async getProducts(limit, page, category, sort, stat) {
         try {
+            let categoryObject
+            let statusObject
             isNaN(limit) ? limit = 10 : limit
             isNaN(page) ? page = 1 : page
-            query ? query = { category: query } : {}
-            // OPTIMIZAR ESTO
-            let result = sort ? await productsModel.paginate(query, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await productsModel.paginate({}, { limit: limit, page: page, lean: true })
-            result.prevLink = result.hasPrevPage ? `http://localhost:8080/api/products?page=${result.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : '';
-            result.nextLink = result.hasNextPage ? `http://localhost:8080/api/products?page=${result.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : '';
-            result.isValid = !(page <= 0 || page > result.totalPages)
-            return result
+            category ? categoryObject = { category: category } : categoryObject = {}
+            stat ? statusObject = { status: stat } : statusObject = {}
+            let filter = { ...categoryObject, ...statusObject }
+            let result = sort ? await productsModel.paginate(filter, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await productsModel.paginate(filter, { limit: limit, page: page, lean: true })
+            result.prevLink = result.hasPrevPage ? `http://localhost:8080/products?page=${result.prevPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
+            result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
+            const productsResponse = {
+                status: "success",
+                payload: result.docs,
+                totalPages: result.totalPages,
+                page: result.page,
+                hasPrevPage: result.hasPrevPage,
+                hasNextPage: result.hasNextPage,
+                prevPage: result.prevPage,
+                nextPage: result.nextPage,
+                prevLink: result.prevLink,
+                nextLink: result.nextLink
+            }
+            return productsResponse
         } catch (error) {
             console.error('Error getting products: ', error)
             return []

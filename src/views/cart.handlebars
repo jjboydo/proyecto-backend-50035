@@ -1,0 +1,15 @@
+{{#if cart}}
+<h1 style="color: darkred; display: flex; justify-content: center;">Carrito N°{{cart._id}}</h1>
+<div style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
+    {{#each cart.products}}
+    <div class="card">
+        <h3><strong>Nombre del producto:</strong> {{this.product.title}}</h3>
+        <p><strong>Código:</strong> {{this.product.code}}</p>
+        <p><strong>Cantidad:</strong> {{this.quantity}}</p>
+        <p><strong>Precio:</strong> ${{this.product.price}}</p>
+    </div>
+    {{/each}}
+</div>
+{{else}}
+<h1 style="color: darkred; display: flex; justify-content: center;">El carrito no existe!</h1>
+{{/if}}

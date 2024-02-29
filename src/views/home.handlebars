@@ -1,6 +1,6 @@
 <h1 style="color: darkred;">Lista de productos</h1>
 <div style=" display: flex; flex-wrap:wrap; gap: 20px;">
-    {{#each productsObjects}}
+    {{#each products.payload}}
     <div class="card">
         <p><strong>Nombre del producto:</strong> {{this.title}}</p>
         <p><strong>Descripción:</strong> {{this.description}}</p>

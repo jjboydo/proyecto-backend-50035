@@ -23,7 +23,7 @@ export default class CartManager {
 
     async getCarts() {
         try {
-            let result = await cartsModel.find()
+            let result = await cartsModel.find().lean()
             return result
         } catch (error) {
             console.error('Error getting carts: ', error)
@@ -36,7 +36,7 @@ export default class CartManager {
             console.log('Invalid cart ID')
             return
         }
-        const cartExists = await cartsModel.findById(cartId).populate("products.product")
+        const cartExists = await cartsModel.findById(cartId).populate("products.product").lean()
         return cartExists
     }
 
@@ -48,7 +48,7 @@ export default class CartManager {
 
             await this.#productExists(productId)
 
-            const productExists = cart.products.find(p => p.product.toString() === productId)
+            const productExists = cart.products.find(p => p.product._id.toString() === productId)
             if (productExists) {
                 productExists.quantity++
             } else {
@@ -58,7 +58,7 @@ export default class CartManager {
                 }
                 cart.products.push(newProduct)
             }
-            await cart.save()
+            await cartsModel.updateOne({ _id: cartId }, cart)
             console.log(`Producto agregado al carrito ${cartId} correctamente!`)
         } catch (error) {
             throw new Error(error.message)
@@ -70,10 +70,12 @@ export default class CartManager {
             const cart = await this.getCartById(cartId)
             if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
 
-            // await this.#productExists(productId)
+            await this.#productExists(productId)
+            let productsUpdated = cart.products.filter(p => p.product._id.toString() !== productId)
+            if (cart.products.length === productsUpdated.length) throw new Error(`Product ${productId} does not exist!`)
 
-            cart.products.pull({ product: productId })
-            await cart.save()
+            cart.products = productsUpdated
+            await cartsModel.updateOne({ _id: cartId }, cart)
             console.log(`Producto eliminado del carrito ${cartId} correctamente!`)
         } catch (error) {
             throw new Error(error.message)
@@ -85,9 +87,9 @@ export default class CartManager {
             const cart = await this.getCartById(cartId)
             if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
 
+            await this.#productExists(productId)
             await cartsModel.updateOne({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
             console.log("Cantidad actualizada correctamente!")
-
         } catch (error) {
             throw new Error(error.message)
         }
@@ -107,10 +109,12 @@ export default class CartManager {
 
     async deleteCart(cartId) {
         try {
+            const cart = await this.getCartById(cartId)
+            if (cart.products.length === 0) throw new Error(`Cart ${cartId} has no products!`)
             await cartsModel.updateOne({ _id: cartId }, { $set: { products: [] } })
             console.log("Carrito eliminado correctamente!")
         } catch (error) {
-            throw new Error(`Cart ${cartId} does not exist!`)
+            throw new Error(`Cart ${cartId} has no products!`)
         }
     }
 }

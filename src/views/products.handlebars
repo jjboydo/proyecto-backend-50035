@@ -1,0 +1,38 @@
+<h1 style="color: darkred; display: flex; justify-content: center;">Lista de productos con paginación</h1>
+<div id="products-list" style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
+    {{#each products.payload}}
+    <div class="card">
+        <h3><strong>Nombre del producto:</strong> {{this.title}}</h3>
+        <p><strong>Descripción:</strong> {{this.description}}</p>
+        <p><strong>Precio:</strong> ${{this.price}}</p>
+        <p><strong>Código:</strong> {{this.code}}</p>
+        <p><strong>Categoría:</strong> {{this.category}}</p>
+        <button id="add-to-cart" class="button" data-productid="{{this._id}}">Agregar al carrito</button>
+    </div>
+    {{/each}}
+</div>
+<div id="cart-modal" class="modal"
+    style="display: flex; flex-direction: column; gap: 10px; align-items: center; display:none">
+    <h4>Elige un carrito</h4>
+    <form id="add-to-cart-form" style="display: flex; flex-direction: column; gap: 40px;">
+        <select id="cart-select">
+            <option selected disabled value="">Seleccione un carrito</option>
+            {{#each cartsList}}
+            <option value="{{this._id}}">{{this._id}}</option>
+            {{/each}}
+        </select>
+        <button type="submit" id="add-to-cart-confirm" class="button">Agregar al carrito</button>
+    </form>
+</div>
+<div id="pagination" style="display: flex; justify-content:center; margin-top: 20px; align-items: center;">
+    {{#if products.hasPrevPage}}
+    <a style="padding-right: 20px;" href={{products.prevLink}}>
+        << Anterior</a>
+            {{/if}}
+            <p style="font-size: 20px; font-weight: bold;">{{products.page}}</p>
+            {{#if products.hasNextPage}}
+            <a style="padding-left: 20px;" href={{products.nextLink}}>Siguiente >></a>
+            {{/if}}
+</div>
+
+<script src="/js/products.js"></script>

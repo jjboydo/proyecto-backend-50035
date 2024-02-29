@@ -15,22 +15,11 @@ export default (socketServer) => {
         try {
             const limit = parseInt(req.query.limit)
             const page = parseInt(req.query.page)
-            const query = req.query.query
+            const category = req.query.category
             const sort = req.query.sort
-            const products = await productManager.getProducts(limit, page, query, sort)
-            const productsResponse = {
-                status: "success",
-                payload: products.docs,
-                totalPages: products.totalPages,
-                page: products.page,
-                hasPrevPage: products.hasPrevPage,
-                hasNextPage: products.hasNextPage,
-                prevPage: products.prevPage,
-                nextPage: products.nextPage,
-                prevLink: products.prevLink,
-                nextLink: products.nextLink
-            }
-            res.json(productsResponse)
+            const status = req.query.status
+            const products = await productManager.getProducts(limit, page, category, sort, status)
+            res.json(products)
         } catch (error) {
             const productsResponse = {
                 status: "error",
