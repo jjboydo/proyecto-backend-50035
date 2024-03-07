@@ -1,10 +1,14 @@
 import express from "express"
 import handlebars from "express-handlebars"
 import mongoose from "mongoose"
+import MongoStore from "connect-mongo"
+import session from "express-session"
 
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
 import viewsRouter from "./routes/views.router.js"
+import sessionsRouter from "./routes/sessions.router.js"
+
 import messagesModel from "./dao/models/messages.model.js"
 
 import { Server } from "socket.io"
@@ -29,9 +33,23 @@ app.use(express.json())
 
 const socketServer = new Server(httpServer)
 
+// Sessions
+
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: "mongodb+srv://juanjoo1020:QRgbB9YyUalDcDcr@codercluster.bsktuqe.mongodb.net/sessions?retryWrites=true&w=majority&appName=CoderCluster",
+        ttl: 150
+    }),
+    secret: "secretCoder",
+    resave: false,
+    saveUninitialized: true
+}))
+
 // Rutas
 app.use('/api/products', productsRouter(socketServer))
 app.use('/api/carts', cartsRouter)
+app.use('/api/sessions', sessionsRouter)
+
 
 // Handlebars
 app.engine("handlebars", handlebars.engine())

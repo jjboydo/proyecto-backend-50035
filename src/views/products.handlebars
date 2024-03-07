@@ -1,3 +1,14 @@
+{{#if first_name}}
+<div style="color: darkred; display: flex; align-items: center; justify-content: space-around;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <p style="font-size: 20px; font-weight: bold;">Bienvenido {{first_name}} {{last_name}}!</p>
+        <p style="font-size: 14px; color: black;">Rol: {{admin}}</p>
+    </div>
+    <form action="/logout" method="get">
+        <button type="submit" id="logout" class="button" style="height: 30px;">Logout</button>
+    </form>
+</div>
+{{/if}}
 <h1 style="color: darkred; display: flex; justify-content: center;">Lista de productos con paginación</h1>
 <div id="products-list" style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
     {{#each products.payload}}
