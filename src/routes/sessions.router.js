@@ -1,5 +1,6 @@
 import express from "express"
 import usersModel from "../dao/models/user.model.js"
+import { createHash, isValidPassword } from "../utils.js"
 
 const router = express.Router()
 
@@ -20,7 +21,7 @@ router.post("/register", async (req, res) => {
             last_name,
             email,
             age,
-            password
+            password: createHash(password)
         })
         // res.send({ status: "success", payload: user })
         res.redirect("/login")
@@ -33,7 +34,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     const { email, password } = req.body
     if (!email || !password) {
-        return res.status(400).send({ status: "error", error: "Faltan datos" });
+        return res.status(400).send({ status: "error", error: "Missing data" });
     }
     if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
         req.session.user = {
@@ -44,16 +45,20 @@ router.post("/login", async (req, res) => {
         }
         req.session.admin = true
     } else {
-        const userValidated = await usersModel.findOne({ email: email, password: password })
-        console.log(userValidated)
-        if (!userValidated) {
-            return res.status(401).send('Login failed')
+        const user = await usersModel.findOne({ email: email })
+        console.log(user)
+        if (!user) {
+            return res.status(401).send({ status: "error", error: 'User not found' })
         }
+        if (!isValidPassword(user, password)) {
+            return res.status(403).send({ status: "error", error: 'Incorrect Password' })
+        }
+        delete user.password
         req.session.user = {
-            first_name: userValidated.first_name,
-            last_name: userValidated.last_name,
-            email: userValidated.email,
-            age: userValidated.age
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            age: user.age
         }
         req.session.admin = false
     }
