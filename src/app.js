@@ -3,6 +3,8 @@ import handlebars from "express-handlebars"
 import mongoose from "mongoose"
 import MongoStore from "connect-mongo"
 import session from "express-session"
+import passport from "passport"
+import initializePassport from "./config/passport.config.js"
 
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
@@ -42,8 +44,11 @@ app.use(session({
     }),
     secret: "secretCoder",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 }))
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Rutas
 app.use('/api/products', productsRouter(socketServer))
