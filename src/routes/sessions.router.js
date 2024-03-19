@@ -9,28 +9,6 @@ const router = express.Router()
 
 router.post("/register", passport.authenticate("register", { failureRedirect: "failregister" }), async (req, res) => {
     res.send({ status: "success", message: "usuario registrado" })
-    /*try {
-        let { first_name, last_name, email, age, password } = req.body
-        if (!first_name || !last_name || !email || !age || !password) {
-            return res.status(400).send({ status: "error", error: "Faltan datos" })
-        }
-        const findUser = await usersModel.findOne({ email: email })
-        if (findUser) {
-            return res.status(400).send({ status: "error", error: "El usuario ya existe" })
-        }
-        const user = await usersModel.create({
-            first_name,
-            last_name,
-            email,
-            age,
-            password: createHash(password)
-        })
-        // res.send({ status: "success", payload: user })
-        res.redirect("/login")
-        console.log("Usuario registrado correctamente")
-    } catch (error) {
-        return res.status(500).send(error)
-    }*/
 })
 
 router.get('/failregister', async (req, res) => {
@@ -52,15 +30,6 @@ router.post("/login", passport.authenticate("login", { failureRedirect: "faillog
         }
         req.session.admin = true
     } else {
-        // const user = await usersModel.findOne({ email: email })
-        // console.log(user)
-        // if (!user) {
-        //     return res.status(401).send({ status: "error", error: 'User not found' })
-        // }
-        // if (!isValidPassword(user, password)) {
-        //     return res.status(403).send({ status: "error", error: 'Incorrect Password' })
-        // }
-        // res.send({ status: "success", payload: req.user })
         req.session.user = {
             first_name: req.user.first_name,
             last_name: req.user.last_name,
@@ -74,6 +43,13 @@ router.post("/login", passport.authenticate("login", { failureRedirect: "faillog
 
 router.get('/faillogin', (req, res) => {
     res.send({ error: 'Failed login' })
+})
+
+router.get('/github', passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { })
+
+router.get('/githubcallback', passport.authenticate("github", { failureRedirect: "/login" }), async (req, res) => {
+    req.session.user = req.user
+    res.redirect("/products")
 })
 
 export default router
