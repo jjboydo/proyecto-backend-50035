@@ -42,7 +42,6 @@ router.post("/login", passport.authenticate("login", { failureRedirect: "faillog
         // req.session.admin = false
     }
     const token = generateToken(tokenUser)
-    console.log(token)
     res.cookie("cookieToken", token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
     // res.redirect("/products")
 })

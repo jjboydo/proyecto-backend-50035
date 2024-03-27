@@ -38,19 +38,19 @@ router.get("/products", async (req, res) => {
     const sort = req.query.sort
     const stat = req.query.stat
     const products = await productManager.getProducts(limit, page, category, sort, stat)
-    const cartsList = await cartManager.getCarts()
-    let first_name, last_name, admin
+    let first_name, last_name, admin, cart
     if (req.cookies.cookieToken) {
         first_name = req.user.first_name
         last_name = req.user.last_name
+        cart = req.user.cart
     }
     req.user.role === "admin" ? admin = "Admin" : admin = "User"
     res.render("products", {
         style: "home.css",
         products,
-        cartsList,
         first_name,
         last_name,
+        cart,
         admin
     })
 })

@@ -9,7 +9,7 @@
     </form>
 </div>
 {{/if}}
-<h1 style="color: darkred; display: flex; justify-content: center;">Lista de productos con paginación</h1>
+<h1 style="color: darkred; display: flex; justify-content: center;">Lista de productos</h1>
 <div id="products-list" style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
     {{#each products.payload}}
     <div class="card">
@@ -24,15 +24,9 @@
 </div>
 <div id="cart-modal" class="modal"
     style="display: flex; flex-direction: column; gap: 10px; align-items: center; display:none">
-    <h4>Elige un carrito</h4>
+    <h4>Desea agregar el producto al carrito?</h4>
     <form id="add-to-cart-form" style="display: flex; flex-direction: column; gap: 40px;">
-        <select id="cart-select">
-            <option selected disabled value="">Seleccione un carrito</option>
-            {{#each cartsList}}
-            <option value="{{this._id}}">{{this._id}}</option>
-            {{/each}}
-        </select>
-        <button type="submit" id="add-to-cart-confirm" class="button">Agregar al carrito</button>
+        <button type="submit" id="add-to-cart-confirm" class="button" data-cartid="{{cart}}">Confirmar</button>
     </form>
 </div>
 <div id="pagination" style="display: flex; justify-content:center; margin-top: 20px; align-items: center;">

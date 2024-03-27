@@ -12,10 +12,11 @@ export default class CartManager {
     }
     async addCart() {
         try {
-            await cartsModel.create({
+            let result = await cartsModel.create({
                 products: []
             })
             console.log("Carrito agregado correctamente!")
+            return result
         } catch (error) {
             throw new Error(error.message)
         }

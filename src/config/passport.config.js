@@ -4,6 +4,7 @@ import userService from "../dao/models/user.model.js"
 import { createHash, isValidPassword } from "../utils.js"
 import GitHubStrategy from "passport-github2"
 import jwt from "passport-jwt"
+import CartManager from "../dao/mongoose/CartManager.js"
 
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
@@ -19,13 +20,16 @@ const initializePassport = () => {
                     console.log("User already exists")
                     return done(null, false, { messages: "User already exists" })
                 }
+                const cartManager = new CartManager()
+                const cart = await cartManager.addCart()
                 const newUser = {
                     first_name,
                     last_name,
                     email,
                     age,
                     password: createHash(password),
-                    role
+                    role,
+                    cart: cart._id
                 }
                 let result = await userService.create(newUser)
                 return done(null, result)
@@ -37,7 +41,17 @@ const initializePassport = () => {
 
     passport.use("login", new LocalStrategy({ usernameField: "email" }, async (username, password, done) => {
         try {
-            const user = await userService.findOne({ email: username })
+            if (username === "adminCoder@coder.com" && password === "adminCod3r123") {
+                const adminUser = {
+                    first_name: "Usuario",
+                    last_name: "Admin",
+                    email: "adminCoder@coder.com",
+                    age: 1,
+                    role: "admin"
+                }
+                return done(null, adminUser);
+            }
+            const user = await userService.findOne({ email: username }).populate("cart")
             if (!user) {
                 console.log("User doesn´t exist")
                 return done(null, false, { messages: "No user found" })
@@ -72,12 +86,15 @@ const initializePassport = () => {
             console.log(profile)
             let user = await userService.findOne({ email: profile._json.email })
             if (!user) {
+                const cartManager = new CartManager()
+                const cart = await cartManager.addCart()
                 let newUser = {
                     first_name: profile._json.name,
                     last_name: '',
                     age: 20,
                     email: profile._json.email,
-                    password: ''
+                    password: '',
+                    cart: cart._id
                 }
                 let result = await userService.create(newUser);
                 done(null, result);
@@ -90,12 +107,27 @@ const initializePassport = () => {
     }))
 
     passport.serializeUser((user, done) => {
-        done(null, user._id)
+        if (user.email === "adminCoder@coder.com") {
+            done(null, "admin")
+        } else {
+            done(null, user._id)
+        }
     })
 
     passport.deserializeUser(async (id, done) => {
-        let user = await userService.findById(id)
-        done(null, user)
+        if (id === "admin") {
+            const adminUser = {
+                first_name: "Usuario",
+                last_name: "Admin",
+                email: "adminCoder@coder.com",
+                age: 1,
+                role: "admin"
+            }
+            done(null, adminUser);
+        } else {
+            let user = await userService.findById(id)
+            done(null, user)
+        }
     })
 }
 
