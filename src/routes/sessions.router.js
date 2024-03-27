@@ -1,6 +1,6 @@
 import express from "express"
 import usersModel from "../dao/models/user.model.js"
-import { createHash, isValidPassword } from "../utils.js"
+import { authorization, createHash, generateToken, isValidPassword, passportCall } from "../utils.js"
 import passport from "passport"
 
 const router = express.Router()
@@ -18,27 +18,33 @@ router.get('/failregister', async (req, res) => {
 
 router.post("/login", passport.authenticate("login", { failureRedirect: "faillogin" }), async (req, res) => {
     const { email, password } = req.body
+    let tokenUser
     if (!email || !password) {
         return res.status(400).send({ status: "error", error: "Missing data" });
     }
     if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-        req.session.user = {
+        tokenUser = {
             first_name: "Usuario",
             last_name: "Admin",
             email: "adminCoder@coder.com",
-            age: 1
+            age: 1,
+            role: "admin"
         }
-        req.session.admin = true
+        // req.session.admin = true
     } else {
-        req.session.user = {
+        tokenUser = {
             first_name: req.user.first_name,
             last_name: req.user.last_name,
             email: req.user.email,
-            age: req.user.age
+            age: req.user.age,
+            role: "user"
         }
-        req.session.admin = false
+        // req.session.admin = false
     }
-    res.redirect("/products")
+    const token = generateToken(tokenUser)
+    console.log(token)
+    res.cookie("cookieToken", token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
+    // res.redirect("/products")
 })
 
 router.get('/faillogin', (req, res) => {
@@ -48,8 +54,21 @@ router.get('/faillogin', (req, res) => {
 router.get('/github', passport.authenticate("github", { scope: ["user:email"] }), async (req, res) => { })
 
 router.get('/githubcallback', passport.authenticate("github", { failureRedirect: "/login" }), async (req, res) => {
-    req.session.user = req.user
-    res.redirect("/products")
+    const tokenUser = {
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        email: req.user.email,
+        age: req.user.age,
+        role: "user"
+    }
+    const token = generateToken(tokenUser)
+    console.log(token)
+    res.cookie("cookieToken", token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
+    // res.redirect("/products")
+})
+
+router.get('/current', passportCall('jwt'), authorization("user"), (req, res) => {
+    res.send(req.user);
 })
 
 export default router

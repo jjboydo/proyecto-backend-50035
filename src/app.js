@@ -5,6 +5,7 @@ import MongoStore from "connect-mongo"
 import session from "express-session"
 import passport from "passport"
 import initializePassport from "./config/passport.config.js"
+import cookieParser from "cookie-parser"
 
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
@@ -14,7 +15,7 @@ import sessionsRouter from "./routes/sessions.router.js"
 import messagesModel from "./dao/models/messages.model.js"
 
 import { Server } from "socket.io"
-import __dirname from "./utils.js"
+import __dirname, { authorization, passportCall } from "./utils.js"
 
 const PORT = 8080
 const app = express()
@@ -32,6 +33,7 @@ mongoose.connect("mongodb+srv://juanjoo1020:QRgbB9YyUalDcDcr@codercluster.bsktuq
 // Middlewares
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(cookieParser())
 
 const socketServer = new Server(httpServer)
 

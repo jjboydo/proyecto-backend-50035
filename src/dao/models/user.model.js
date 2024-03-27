@@ -7,7 +7,8 @@ const usersSchema = new mongoose.Schema({
     last_name: { type: String, max: 50 },
     email: { type: String, required: true, max: 50 },
     age: { type: Number, required: true, min: 0, max: 100 },
-    password: { type: String }
+    password: { type: String },
+    role: { type: String, default: "user" }
 })
 
 const usersModel = mongoose.model(usersCollection, usersSchema)

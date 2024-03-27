@@ -3,25 +3,29 @@ import local from "passport-local"
 import userService from "../dao/models/user.model.js"
 import { createHash, isValidPassword } from "../utils.js"
 import GitHubStrategy from "passport-github2"
+import jwt from "passport-jwt"
 
+const JWTStrategy = jwt.Strategy
+const ExtractJWT = jwt.ExtractJwt
 const LocalStrategy = local.Strategy
 
 const initializePassport = () => {
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: "email" }, async (req, username, password, done) => {
-            const { first_name, last_name, email, age } = req.body
+            const { first_name, last_name, email, age, role } = req.body
             try {
                 let user = await userService.findOne({ email: username })
                 if (user) {
                     console.log("User already exists")
-                    return done(null, false)
+                    return done(null, false, { messages: "User already exists" })
                 }
                 const newUser = {
                     first_name,
                     last_name,
                     email,
                     age,
-                    password: createHash(password)
+                    password: createHash(password),
+                    role
                 }
                 let result = await userService.create(newUser)
                 return done(null, result)
@@ -36,15 +40,28 @@ const initializePassport = () => {
             const user = await userService.findOne({ email: username })
             if (!user) {
                 console.log("User doesn´t exist")
-                return done(null, false)
+                return done(null, false, { messages: "No user found" })
             }
-            if (!isValidPassword(user, password)) return done(null, false)
+            if (!isValidPassword(user, password)) return done(null, false, { messages: "Incorrect password" })
             delete user.password
             return done(null, user)
         } catch (error) {
             return done(error)
         }
     }))
+
+    passport.use('jwt', new JWTStrategy({
+        jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
+        secretOrKey: 'secretCoder'
+    }, async (jwt_payload, done) => {
+        try {
+            return done(null, jwt_payload)
+        }
+        catch (error) {
+            return done(error)
+        }
+    }
+    ))
 
     passport.use('github', new GitHubStrategy({
         clientID: "Iv1.4e46e84a54b42d24",
@@ -80,6 +97,14 @@ const initializePassport = () => {
         let user = await userService.findById(id)
         done(null, user)
     })
+}
+
+const cookieExtractor = (req) => {
+    let token = null
+    if (req && req.cookies) {
+        token = req.cookies['cookieToken']
+    }
+    return token
 }
 
 export default initializePassport
