@@ -1,0 +1,62 @@
+import config from "../config/config.js"
+import { generateToken } from "../utils.js"
+export const register = async (req, res) => {
+    res.send({ status: "success", message: "usuario registrado" })
+}
+
+export const failRegister = async (req, res) => {
+    console.log('Registro fallido')
+    res.send({ error: "Failed register" })
+}
+
+export const login = async (req, res) => {
+    const { email, password } = req.body
+    let tokenUser
+    if (!email || !password) {
+        return res.status(400).send({ status: "error", error: "Missing data" });
+    }
+    if (email === config.adminName && password === config.adminPassword) {
+        tokenUser = {
+            first_name: "Usuario",
+            last_name: "Admin",
+            email: config.adminName,
+            age: 1,
+            role: "admin"
+        }
+        // req.session.admin = true
+    } else {
+        tokenUser = {
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            email: req.user.email,
+            age: req.user.age,
+            role: "user"
+        }
+        // req.session.admin = false
+    }
+    const token = generateToken(tokenUser)
+    res.cookie(config.cookieToken, token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
+    // res.redirect("/products")
+}
+
+export const failLogin = async (req, res) => {
+    res.send({ error: 'Failed login' })
+}
+
+export const githubCallback = async (req, res) => {
+    const tokenUser = {
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        email: req.user.email,
+        age: req.user.age,
+        role: "user"
+    }
+    const token = generateToken(tokenUser)
+    console.log(token)
+    res.cookie(config.cookieToken, token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
+    // res.redirect("/products")
+}
+
+export const current = (req, res) => {
+    res.send(req.user);
+}

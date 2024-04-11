@@ -1,9 +1,11 @@
-import productsModel from "../models/products.model.js";
+import ProductDAO from "../dao/mongoose/ProductDAO.js";
 
-export default class ProductManager {
+const productDAO = new ProductDAO()
+
+export default class ProductService {
 
     async #validateCode(code) {
-        const product = await productsModel.findOne({ code: code });
+        const product = await productDAO.findProductByCode(code);
         if (product) throw new Error("There is already a product with that code");
     }
 
@@ -17,7 +19,7 @@ export default class ProductManager {
         try {
             await this.#validateCode(product.code)
             this.#validateProduct(product)
-            await productsModel.create({
+            await productDAO.createProduct({
                 title: product.title,
                 description: product.description,
                 code: product.code,
@@ -42,7 +44,7 @@ export default class ProductManager {
             category ? categoryObject = { category: category } : categoryObject = {}
             stat ? statusObject = { status: stat } : statusObject = {}
             let filter = { ...categoryObject, ...statusObject }
-            let result = sort ? await productsModel.paginate(filter, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await productsModel.paginate(filter, { limit: limit, page: page, lean: true })
+            let result = sort ? await productDAO.getProducts(filter, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await productDAO.getProducts(filter, { limit: limit, page: page, lean: true })
             result.prevLink = result.hasPrevPage ? `http://localhost:8080/products?page=${result.prevPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
             result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
             const productsResponse = {
@@ -69,7 +71,7 @@ export default class ProductManager {
             console.log('Invalid product ID')
             return
         }
-        const productExists = await productsModel.findById(productId)
+        const productExists = await productDAO.getProductById(productId)
         return productExists
     }
 
@@ -77,7 +79,7 @@ export default class ProductManager {
         try {
             delete fieldsToUpdate.id
             await this.#validateCode(fieldsToUpdate.code)
-            await productsModel.updateOne({ _id: productId }, fieldsToUpdate)
+            await productDAO.updateProduct(productId, fieldsToUpdate)
             console.log("Producto modificado correctamente!")
         } catch (error) {
             throw new Error(`Product ${productId} does not exist!`)
@@ -86,7 +88,7 @@ export default class ProductManager {
 
     async deleteProduct(productId) {
         try {
-            await productsModel.deleteOne({ _id: productId })
+            await productDAO.deleteProduct(productId)
             console.log("Producto eliminado correctamente!")
         } catch (error) {
             throw new Error(`Product ${productId} does not exist!`)

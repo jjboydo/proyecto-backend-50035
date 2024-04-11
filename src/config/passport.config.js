@@ -4,11 +4,14 @@ import userService from "../dao/models/user.model.js"
 import { createHash, isValidPassword } from "../utils.js"
 import GitHubStrategy from "passport-github2"
 import jwt from "passport-jwt"
-import CartManager from "../dao/mongoose/CartManager.js"
+import CartService from "../services/cartServices.js"
+
+import config from "./config.js"
 
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
 const LocalStrategy = local.Strategy
+
 
 const initializePassport = () => {
     passport.use('register', new LocalStrategy(
@@ -20,8 +23,8 @@ const initializePassport = () => {
                     console.log("User already exists")
                     return done(null, false, { messages: "User already exists" })
                 }
-                const cartManager = new CartManager()
-                const cart = await cartManager.addCart()
+                const cartService = new CartService()
+                const cart = await cartService.addCart()
                 const newUser = {
                     first_name,
                     last_name,
@@ -41,11 +44,11 @@ const initializePassport = () => {
 
     passport.use("login", new LocalStrategy({ usernameField: "email" }, async (username, password, done) => {
         try {
-            if (username === "adminCoder@coder.com" && password === "adminCod3r123") {
+            if (username === config.adminName && password === config.adminPassword) {
                 const adminUser = {
                     first_name: "Usuario",
                     last_name: "Admin",
-                    email: "adminCoder@coder.com",
+                    email: config.adminName,
                     age: 1,
                     role: "admin"
                 }
@@ -66,7 +69,7 @@ const initializePassport = () => {
 
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: 'secretCoder'
+        secretOrKey: config.privateKey
     }, async (jwt_payload, done) => {
         try {
             return done(null, jwt_payload)
@@ -86,8 +89,8 @@ const initializePassport = () => {
             console.log(profile)
             let user = await userService.findOne({ email: profile._json.email })
             if (!user) {
-                const cartManager = new CartManager()
-                const cart = await cartManager.addCart()
+                const cartService = new CartService()
+                const cart = await cartService.addCart()
                 let newUser = {
                     first_name: profile._json.name,
                     last_name: '',
@@ -107,7 +110,7 @@ const initializePassport = () => {
     }))
 
     passport.serializeUser((user, done) => {
-        if (user.email === "adminCoder@coder.com") {
+        if (user.email === config.adminName) {
             done(null, "admin")
         } else {
             done(null, user._id)
@@ -119,7 +122,7 @@ const initializePassport = () => {
             const adminUser = {
                 first_name: "Usuario",
                 last_name: "Admin",
-                email: "adminCoder@coder.com",
+                email: config.adminName,
                 age: 1,
                 role: "admin"
             }
@@ -134,7 +137,7 @@ const initializePassport = () => {
 const cookieExtractor = (req) => {
     let token = null
     if (req && req.cookies) {
-        token = req.cookies['cookieToken']
+        token = req.cookies[config.cookieToken]
     }
     return token
 }

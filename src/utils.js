@@ -3,6 +3,7 @@ import { dirname } from "path"
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
+import config from './config/config.js'
 
 const __fliename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__fliename)
@@ -10,7 +11,7 @@ const __dirname = dirname(__fliename)
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 export const isValidPassword = (user, password) => bcrypt.compareSync(password, user.password)
 
-const PRIVATE_KEY = "secretCoder"
+const PRIVATE_KEY = config.privateKey
 
 export const generateToken = (user) => {
     return jwt.sign(user, PRIVATE_KEY, { expiresIn: "24h" })

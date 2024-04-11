@@ -6,6 +6,7 @@ import session from "express-session"
 import passport from "passport"
 import initializePassport from "./config/passport.config.js"
 import cookieParser from "cookie-parser"
+import config from "./config/config.js"
 
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
@@ -17,12 +18,12 @@ import messagesModel from "./dao/models/messages.model.js"
 import { Server } from "socket.io"
 import __dirname, { authorization, passportCall } from "./utils.js"
 
-const PORT = 8080
+const PORT = config.port
 const app = express()
 const httpServer = app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`))
 
 // Conexión a base de datos
-mongoose.connect("mongodb+srv://juanjoo1020:QRgbB9YyUalDcDcr@codercluster.bsktuqe.mongodb.net/ecommerce?retryWrites=true&w=majority")
+mongoose.connect(config.mongoUrl)
     .then(() => {
         console.log("Conectado a la base de datos")
     })
@@ -41,10 +42,10 @@ const socketServer = new Server(httpServer)
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: "mongodb+srv://juanjoo1020:QRgbB9YyUalDcDcr@codercluster.bsktuqe.mongodb.net/sessions?retryWrites=true&w=majority&appName=CoderCluster",
+        mongoUrl: config.mongoUrlSessions,
         ttl: 150
     }),
-    secret: "secretCoder",
+    secret: config.privateKey,
     resave: false,
     saveUninitialized: false
 }))

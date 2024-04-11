@@ -1,9 +1,10 @@
 import express from "express"
-import CartManager from "../dao/mongoose/CartManager.js"
-import ProductManager from "../dao/mongoose/ProductManager.js"
+import CartService from "../services/cartServices.js"
+import ProductService from "../services/productServices.js"
+import config from "../config/config.js"
 
-const productManager = new ProductManager()
-const cartManager = new CartManager()
+const productService = new ProductService()
+const cartService = new CartService()
 
 const router = express.Router()
 
@@ -18,7 +19,7 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/realtimeproducts", async (req, res) => {
-    const products = await productManager.getProducts()
+    const products = await productService.getProducts()
     res.render("realTimeProducts", {
         style: "home.css",
         products
@@ -37,7 +38,7 @@ router.get("/products", async (req, res) => {
     const category = req.query.category
     const sort = req.query.sort
     const stat = req.query.stat
-    const products = await productManager.getProducts(limit, page, category, sort, stat)
+    const products = await productService.getProducts(limit, page, category, sort, stat)
     let first_name, last_name, admin, cart
     if (req.cookies.cookieToken) {
         first_name = req.user.first_name
@@ -57,7 +58,7 @@ router.get("/products", async (req, res) => {
 
 router.get("/carts/:cid", async (req, res) => {
     const cartId = req.params.cid
-    const cart = await cartManager.getCartById(cartId)
+    const cart = await cartService.getCartById(cartId)
     res.render("cart", {
         style: "home.css",
         cart
@@ -104,7 +105,7 @@ router.get('/logout', (req, res) => {
     //     console.log("Logout OK")
     //     res.redirect("/login")
     // })
-    res.clearCookie("cookieToken").redirect("/login")
+    res.clearCookie(config.cookieToken).redirect("/login")
 })
 
 export default router
