@@ -2,9 +2,9 @@ import express from "express"
 import CartService from "../services/cartServices.js"
 import ProductService from "../services/productServices.js"
 import config from "../config/config.js"
-
-const productService = new ProductService()
-const cartService = new CartService()
+import { productService } from "../services/index.js"
+import { cartService } from "../services/index.js"
+import { authorization, passportCall } from "../utils.js"
 
 const router = express.Router()
 
@@ -26,7 +26,7 @@ router.get("/realtimeproducts", async (req, res) => {
     })
 })
 
-router.get("/chat", async (req, res) => {
+router.get("/chat", passportCall('jwt'), authorization("user"), async (req, res) => {
     res.render("chat", {
         style: "home.css"
     })

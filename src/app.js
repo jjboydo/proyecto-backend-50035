@@ -1,22 +1,22 @@
+import MongoStore from "connect-mongo"
+import cookieParser from "cookie-parser"
 import express from "express"
 import handlebars from "express-handlebars"
-import mongoose from "mongoose"
-import MongoStore from "connect-mongo"
 import session from "express-session"
+import mongoose from "mongoose"
 import passport from "passport"
-import initializePassport from "./config/passport.config.js"
-import cookieParser from "cookie-parser"
 import config from "./config/config.js"
+import initializePassport from "./config/passport.config.js"
 
-import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
-import viewsRouter from "./routes/views.router.js"
+import productsRouter from "./routes/products.router.js"
 import sessionsRouter from "./routes/sessions.router.js"
+import viewsRouter from "./routes/views.router.js"
 
 import messagesModel from "./dao/models/messages.model.js"
 
 import { Server } from "socket.io"
-import __dirname, { authorization, passportCall } from "./utils.js"
+import __dirname from "./utils.js"
 
 const PORT = config.port
 const app = express()

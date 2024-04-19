@@ -1,10 +1,11 @@
-import CartDAO from "../dao/mongoose/CartDAO.js"
 import ProductDAO from "../dao/mongoose/ProductDAO.js";
 
-const cartDAO = new CartDAO()
 const productDAO = new ProductDAO()
 
 export default class CartService {
+    constructor(dao) {
+        this.dao = dao
+    }
 
     async #productExists(productId) {
         if (!productId || productId.length !== 24) {
@@ -15,7 +16,7 @@ export default class CartService {
     }
     async addCart() {
         try {
-            let result = await cartDAO.createCart()
+            let result = await this.dao.createCart()
             console.log("Carrito agregado correctamente!")
             return result
         } catch (error) {
@@ -25,7 +26,7 @@ export default class CartService {
 
     async getCarts() {
         try {
-            let result = await cartDAO.getCarts()
+            let result = await this.dao.getCarts()
             return result
         } catch (error) {
             console.error('Error getting carts: ', error)
@@ -38,7 +39,7 @@ export default class CartService {
             console.log('Invalid cart ID')
             return
         }
-        const cartExists = await cartDAO.getCartById(cartId)
+        const cartExists = await this.dao.getCartById(cartId)
         return cartExists
     }
 
@@ -60,7 +61,7 @@ export default class CartService {
                 }
                 cart.products.push(newProduct)
             }
-            await cartDAO.updateCart(cartId, cart)
+            await this.dao.updateCart(cartId, cart)
             console.log(`Producto agregado al carrito ${cartId} correctamente!`)
         } catch (error) {
             throw new Error(error.message)
@@ -77,7 +78,7 @@ export default class CartService {
             if (cart.products.length === productsUpdated.length) throw new Error(`Product ${productId} does not exist!`)
 
             cart.products = productsUpdated
-            await cartDAO.updateCart(cartId, cart)
+            await this.dao.updateCart(cartId, cart)
             console.log(`Producto eliminado del carrito ${cartId} correctamente!`)
         } catch (error) {
             throw new Error(error.message)
@@ -90,7 +91,7 @@ export default class CartService {
             if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
 
             await this.#productExists(productId)
-            await cartDAO.updateProductFromCart({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
+            await this.dao.updateProductFromCart({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
             console.log("Cantidad actualizada correctamente!")
         } catch (error) {
             throw new Error(error.message)
@@ -102,7 +103,7 @@ export default class CartService {
             const cart = await this.getCartById(cartId)
             if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
 
-            await cartDAO.updateProductFromCart({ _id: cartId }, { $set: { products: updatedProducts } })
+            await this.dao.updateProductFromCart({ _id: cartId }, { $set: { products: updatedProducts } })
             console.log("Carrito actualizado correctamente!")
         } catch (error) {
             throw new Error(error.message)
@@ -113,7 +114,7 @@ export default class CartService {
         try {
             const cart = await this.getCartById(cartId)
             if (cart.products.length === 0) throw new Error(`Cart ${cartId} has no products!`)
-            await cartDAO.deleteCart(cartId)
+            await this.dao.deleteCart(cartId)
             console.log("Carrito eliminado correctamente!")
         } catch (error) {
             throw new Error(`Cart ${cartId} has no products!`)

@@ -1,8 +1,6 @@
 import express from "express"
-import ProductManager from '../dao/mongoose/ProductDAO.js'
-import path from 'path'
-import __dirname from "../utils.js"
-import { getProducts, deleteProduct, updateProductSocket, getProductById, updateProduct } from "../controllers/productsController.js"
+import { deleteProduct, getProductById, getProducts, updateProduct, updateProductSocket } from "../controllers/productsController.js"
+import { authorization, passportCall } from "../utils.js"
 
 export default (socketServer) => {
 
@@ -14,11 +12,11 @@ export default (socketServer) => {
 
     router.get("/:pid", getProductById)
 
-    router.post("/", updateProductSocket)
+    router.post("/", passportCall('jwt'), authorization("admin"), updateProductSocket)
 
-    router.put("/:pid", updateProduct)
+    router.put("/:pid", passportCall('jwt'), authorization("admin"), updateProduct)
 
-    router.delete("/:pid", deleteProduct)
+    router.delete("/:pid", passportCall('jwt'), authorization("admin"), deleteProduct)
 
     return router
 

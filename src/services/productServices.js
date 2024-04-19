@@ -1,11 +1,10 @@
-import ProductDAO from "../dao/mongoose/ProductDAO.js";
-
-const productDAO = new ProductDAO()
-
 export default class ProductService {
+    constructor(dao) {
+        this.dao = dao
+    }
 
     async #validateCode(code) {
-        const product = await productDAO.findProductByCode(code);
+        const product = await this.dao.findProductByCode(code);
         if (product) throw new Error("There is already a product with that code");
     }
 
@@ -19,7 +18,7 @@ export default class ProductService {
         try {
             await this.#validateCode(product.code)
             this.#validateProduct(product)
-            await productDAO.createProduct({
+            await this.dao.createProduct({
                 title: product.title,
                 description: product.description,
                 code: product.code,
@@ -44,7 +43,7 @@ export default class ProductService {
             category ? categoryObject = { category: category } : categoryObject = {}
             stat ? statusObject = { status: stat } : statusObject = {}
             let filter = { ...categoryObject, ...statusObject }
-            let result = sort ? await productDAO.getProducts(filter, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await productDAO.getProducts(filter, { limit: limit, page: page, lean: true })
+            let result = sort ? await this.dao.getProducts(filter, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await this.dao.getProducts(filter, { limit: limit, page: page, lean: true })
             result.prevLink = result.hasPrevPage ? `http://localhost:8080/products?page=${result.prevPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
             result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
             const productsResponse = {
@@ -71,7 +70,7 @@ export default class ProductService {
             console.log('Invalid product ID')
             return
         }
-        const productExists = await productDAO.getProductById(productId)
+        const productExists = await this.dao.getProductById(productId)
         return productExists
     }
 
@@ -79,7 +78,7 @@ export default class ProductService {
         try {
             delete fieldsToUpdate.id
             await this.#validateCode(fieldsToUpdate.code)
-            await productDAO.updateProduct(productId, fieldsToUpdate)
+            await this.dao.updateProduct(productId, fieldsToUpdate)
             console.log("Producto modificado correctamente!")
         } catch (error) {
             throw new Error(`Product ${productId} does not exist!`)
@@ -88,7 +87,7 @@ export default class ProductService {
 
     async deleteProduct(productId) {
         try {
-            await productDAO.deleteProduct(productId)
+            await this.dao.deleteProduct(productId)
             console.log("Producto eliminado correctamente!")
         } catch (error) {
             throw new Error(`Product ${productId} does not exist!`)

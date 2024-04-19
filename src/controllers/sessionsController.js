@@ -1,4 +1,5 @@
 import config from "../config/config.js"
+import UserDTO from "../dao/DTOs/user.dto.js"
 import { generateToken } from "../utils.js"
 export const register = async (req, res) => {
     res.send({ status: "success", message: "usuario registrado" })
@@ -30,6 +31,7 @@ export const login = async (req, res) => {
             last_name: req.user.last_name,
             email: req.user.email,
             age: req.user.age,
+            cartId: req.user.cart._id,
             role: "user"
         }
         // req.session.admin = false
@@ -58,5 +60,6 @@ export const githubCallback = async (req, res) => {
 }
 
 export const current = (req, res) => {
-    res.send(req.user);
+    let user = new UserDTO(req.user)
+    res.send(user);
 }
