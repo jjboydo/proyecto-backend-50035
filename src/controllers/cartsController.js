@@ -1,4 +1,4 @@
-import { cartService } from "../services/index.js"
+import { cartService, productService } from "../services/index.js"
 
 export const addCart = async (req, res) => {
     try {
@@ -68,5 +68,47 @@ export const deleteCart = async (req, res) => {
         res.status(200).json({ success: `Cart ${cartId} removed successfully!` })
     } catch (error) {
         res.status(500).json({ error: `Deleting cart. ${error}` })
+    }
+}
+
+export const purchaseCart = async (req, res) => {
+    try {
+        const cartId = req.params.cid
+        const cart = await cartService.getCartById(cartId)
+        let productsPurchased = []
+        let canceledProducts = []
+
+        for (let i = 0; i < cart.products.length; i++) {
+            let productInCart = cart.products[i]
+            let product = await productService.getProductsById(productInCart.product._id.toString())
+
+            // console.log("Producto del carrito: ", productInCart)
+            // console.log("Producto traido de la BD: ", product)
+
+            if (product.stock < productInCart.quantity) {
+                // Guardar los id que no tienen stock
+                canceledProducts.push(product._id.toString())
+            } else {
+                product.stock -= productInCart.quantity
+                // await productService.updateProduct(product._id, product)
+                await product.save()
+                productsPurchased.push(product)
+            }
+        }
+
+        cart.products = cart.products.filter(productCart => {
+            return canceledProducts.includes(productCart.product._id.toString());
+        })
+
+        await cartService.updateCart(cartId, cart.products)
+
+        if (canceledProducts) {
+            res.status(200).json({ success: `Purchase completed partially`, payload: canceledProducts })
+        } else {
+            res.status(200).json({ success: `Purchase completed successfully` })
+        }
+
+    } catch (error) {
+        res.status(500).json({ error: `Error finalizing purchase. ${error}` })
     }
 }

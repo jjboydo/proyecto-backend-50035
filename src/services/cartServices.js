@@ -35,12 +35,16 @@ export default class CartService {
     }
 
     async getCartById(cartId) {
-        if (!cartId || cartId.length !== 24) {
-            console.log('Invalid cart ID')
-            return
+        try {
+            if (!cartId || cartId.length !== 24) {
+                console.log('Invalid cart ID')
+                return
+            }
+            const cartExists = await this.dao.getCartById(cartId)
+            return cartExists
+        } catch (error) {
+            throw new Error(error.message)
         }
-        const cartExists = await this.dao.getCartById(cartId)
-        return cartExists
     }
 
     async addProductToCart(cartId, productId) {
