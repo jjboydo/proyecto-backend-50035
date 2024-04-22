@@ -4,9 +4,16 @@
         <p style="font-size: 20px; font-weight: bold;">Bienvenido {{first_name}} {{last_name}}!</p>
         <p style="font-size: 14px; color: black;">Rol: {{admin}}</p>
     </div>
-    <form action="/logout" method="get">
-        <button type="submit" id="logout" class="button" style="height: 30px;">Logout</button>
-    </form>
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <a id="view-cart" class="button" style="padding-top: 10px; background-color: rgb(87, 39, 39)"
+            href="/carts/{{cartId}}">Ver
+            Carrito</a>
+        <a id="view-profile" class="button" style="padding-top: 10px; background-color: rgb(87, 39, 39)"
+            href="/profile">Ver Perfil</a>
+        <form action="/logout" method="get">
+            <button type="submit" id="logout" class="button" style="height: 30px;">Logout</button>
+        </form>
+    </div>
 </div>
 {{/if}}
 <h1 style="color: darkred; display: flex; justify-content: center;">Lista de productos</h1>
@@ -26,7 +33,7 @@
     style="display: flex; flex-direction: column; gap: 10px; align-items: center; display:none">
     <h4>Desea agregar el producto al carrito?</h4>
     <form id="add-to-cart-form" style="display: flex; flex-direction: column; gap: 40px;">
-        <button type="submit" id="add-to-cart-confirm" class="button" data-cartid="{{cart}}">Confirmar</button>
+        <button type="submit" id="add-to-cart-confirm" class="button" data-cartid="{{cartId}}">Confirmar</button>
     </form>
 </div>
 <div id="pagination" style="display: flex; justify-content:center; margin-top: 20px; align-items: center;">

@@ -12,11 +12,11 @@ export default (socketServer) => {
 
     router.get("/:pid", getProductById)
 
-    router.post("/", passportCall('jwt'), authorization("admin"), updateProductSocket)
+    router.post("/", passportCall('jwt'), authorization("admin"), updateProductSocket(socketServer))
 
-    router.put("/:pid", passportCall('jwt'), authorization("admin"), updateProduct)
+    router.put("/:pid", passportCall('jwt'), authorization("admin"), updateProduct(socketServer))
 
-    router.delete("/:pid", passportCall('jwt'), authorization("admin"), deleteProduct)
+    router.delete("/:pid", passportCall('jwt'), authorization("admin"), deleteProduct(socketServer))
 
     return router
 

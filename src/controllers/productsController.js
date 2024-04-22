@@ -25,7 +25,7 @@ export const getProductById = async (req, res) => {
     res.json(product)
 }
 
-export const updateProductSocket = async (req, res) => {
+export const updateProductSocket = (socketServer) => async (req, res) => {
     try {
         const newProduct = req.body
         await productService.addProduct(newProduct)
@@ -37,7 +37,7 @@ export const updateProductSocket = async (req, res) => {
     }
 }
 
-export const updateProduct = async (req, res) => {
+export const updateProduct = (socketServer) => async (req, res) => {
     try {
         const productId = req.params.pid
         const updatedProduct = req.body
@@ -50,7 +50,7 @@ export const updateProduct = async (req, res) => {
     }
 }
 
-export const deleteProduct = async (req, res) => {
+export const deleteProduct = (socketServer) => async (req, res) => {
     try {
         const productId = req.params.pid
         await productService.deleteProduct(productId)

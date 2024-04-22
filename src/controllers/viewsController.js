@@ -30,11 +30,12 @@ export const getProducts = async (req, res) => {
     const sort = req.query.sort
     const stat = req.query.stat
     const products = await productService.getProducts(limit, page, category, sort, stat)
-    let first_name, last_name, admin, cart
+    let first_name, last_name, admin, cart, cartId
     if (req.cookies.cookieToken) {
         first_name = req.user.first_name
         last_name = req.user.last_name
         cart = req.user.cart
+        cartId = req.user.cartId
     }
     req.user.role === "admin" ? admin = "Admin" : admin = "User"
     res.render("products", {
@@ -43,7 +44,8 @@ export const getProducts = async (req, res) => {
         first_name,
         last_name,
         cart,
-        admin
+        admin,
+        cartId
     })
 }
 

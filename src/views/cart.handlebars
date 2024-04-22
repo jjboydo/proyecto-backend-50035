@@ -1,5 +1,6 @@
 {{#if cart}}
 <h1 style="color: darkred; display: flex; justify-content: center;">Carrito N°{{cart._id}}</h1>
+{{#if cart.products.length}}
 <div style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
     {{#each cart.products}}
     <div class="card">
@@ -10,6 +11,13 @@
     </div>
     {{/each}}
 </div>
+<form action="http://localhost:8080/api/carts/{{cart._id}}/purchase"
+    style="padding-top: 50px;display: flex; gap: 40px; justify-content: center;" method="post">
+    <button type="submit" id="checkout" class="button" style="">Finalizar Compra</button>
+</form>
+{{else}}
+<h1 style="color: black; display: flex; justify-content: center;">El carrito no tiene productos!</h1>
+{{/if}}
 {{else}}
 <h1 style="color: darkred; display: flex; justify-content: center;">El carrito no existe!</h1>
 {{/if}}
