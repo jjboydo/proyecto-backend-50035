@@ -18,7 +18,8 @@ export const getRealTimeProducts = async (req, res) => {
 
 export const getChat = async (req, res) => {
     res.render("chat", {
-        style: "home.css"
+        style: "home.css",
+        user: req.user.first_name
     })
 }
 

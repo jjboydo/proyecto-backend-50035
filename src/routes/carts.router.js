@@ -20,6 +20,6 @@ router.put("/:cid/product/:pid", updateProductFromCart)
 
 router.delete("/:cid", deleteCart)
 
-router.post("/:cid/purchase", purchaseCart)
+router.post("/:cid/purchase", passportCall('jwt'), verifyUserCart(), purchaseCart)
 
 export default router

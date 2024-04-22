@@ -4,19 +4,13 @@ let user
 let chatBox = document.getElementById('chatBox')
 
 Swal.fire({
-    title: "Acceder al chat",
-    input: "text",
-    text: "Ingresa un nombre para acceder al chat",
-    inputValidator: (value) => {
-        return !value && "Necesitas escribir un nombre de usuario para continuar"
-    },
+    title: "Accediendo al chat",
+    text: "Bienvenido al chat",
     allowOutsideClick: false
 
 }).then(result => {
-    user = result.value
+    user = document.getElementById('user').innerHTML
     socket.emit('showMessages')
-    let title = document.getElementById('title')
-    title.innerHTML = `Bienvenido al chat ${user}!`
 })
 
 chatBox.addEventListener('keyup', e => {
