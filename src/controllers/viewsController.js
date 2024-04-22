@@ -1,5 +1,5 @@
 import config from "../config/config.js"
-import { cartService, productService } from "../services/index.js"
+import { cartService, productService } from "../repositories/index.js"
 export const getHome = async (req, res) => {
     if (req.cookies.cookieToken) {
         return res.redirect("/products")

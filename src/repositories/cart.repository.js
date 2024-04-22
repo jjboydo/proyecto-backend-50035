@@ -1,9 +1,6 @@
-import ProductDAO from "../dao/mongoose/ProductDAO.js";
 import { productService, ticketService } from "./index.js";
 
-const productDAO = new ProductDAO()
-
-export default class CartService {
+export default class CartRepository {
     constructor(dao) {
         this.dao = dao
     }
@@ -12,7 +9,7 @@ export default class CartService {
         if (!productId || productId.length !== 24) {
             throw new Error(`Product ${productId} does not exist!`)
         }
-        const product = await productDAO.getProductById(productId);
+        const product = await productService.getProductsById(productId);
         if (!product) throw new Error(`Product ${productId} does not exist!`);
     }
     async addCart() {

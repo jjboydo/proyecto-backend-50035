@@ -1,6 +1,6 @@
 import express from "express"
 import { getCarts, getChat, getHome, getLogin, getLogout, getProducts, getProfile, getRealTimeProducts, getRegister } from "../controllers/viewsController.js"
-import { authorization, passportCall } from "../utils.js"
+import { authorization, passportCall, verifyUserCart } from "../utils.js"
 
 const router = express.Router()
 
@@ -12,9 +12,9 @@ router.get("/realtimeproducts", getRealTimeProducts)
 
 router.get("/chat", passportCall('jwt'), authorization("user"), getChat)
 
-router.get("/products", getProducts)
+router.get("/products", passportCall('jwt'), getProducts)
 
-router.get("/carts/:cid", getCarts)
+router.get("/carts/:cid", passportCall('jwt'), verifyUserCart(), getCarts)
 
 // VISTAS DE LOGIN
 

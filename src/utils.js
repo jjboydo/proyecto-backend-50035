@@ -4,7 +4,7 @@ import passport from 'passport'
 import { dirname } from "path"
 import { fileURLToPath } from 'url'
 import config from './config/config.js'
-import { cartService } from "./services/index.js"
+import { cartService } from "./repositories/index.js"
 
 const __fliename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__fliename)

@@ -1,10 +1,10 @@
 import passport from "passport"
-import local from "passport-local"
-import userService from "../dao/models/user.model.js"
-import { createHash, isValidPassword } from "../utils.js"
 import GitHubStrategy from "passport-github2"
 import jwt from "passport-jwt"
-import CartService from "../services/cartServices.js"
+import local from "passport-local"
+import userService from "../dao/models/user.model.js"
+import { cartService } from "../repositories/index.js"
+import { createHash, isValidPassword } from "../utils.js"
 
 import config from "./config.js"
 
@@ -23,7 +23,6 @@ const initializePassport = () => {
                     console.log("User already exists")
                     return done(null, false, { messages: "User already exists" })
                 }
-                const cartService = new CartService()
                 const cart = await cartService.addCart()
                 const newUser = {
                     first_name,
@@ -89,7 +88,6 @@ const initializePassport = () => {
             console.log(profile)
             let user = await userService.findOne({ email: profile._json.email })
             if (!user) {
-                const cartService = new CartService()
                 const cart = await cartService.addCart()
                 let newUser = {
                     first_name: profile._json.name,
