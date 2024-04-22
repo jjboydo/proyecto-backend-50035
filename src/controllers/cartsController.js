@@ -1,4 +1,4 @@
-import { cartService, productService } from "../services/index.js"
+import { cartService, productService, ticketService } from "../services/index.js"
 
 export const addCart = async (req, res) => {
     try {
@@ -74,35 +74,13 @@ export const deleteCart = async (req, res) => {
 export const purchaseCart = async (req, res) => {
     try {
         const cartId = req.params.cid
-        const cart = await cartService.getCartById(cartId)
-        let productsPurchased = []
-        let canceledProducts = []
+        const userEmail = req.user.email
 
-        for (let i = 0; i < cart.products.length; i++) {
-            let productInCart = cart.products[i]
-            let product = await productService.getProductsById(productInCart.product._id.toString())
+        const { productsPurchased, canceledProducts, total } = await cartService.purchaseCart(cartId, userEmail)
 
-            // console.log("Producto del carrito: ", productInCart)
-            // console.log("Producto traido de la BD: ", product)
-
-            if (product.stock < productInCart.quantity) {
-                // Guardar los id que no tienen stock
-                canceledProducts.push(product._id.toString())
-            } else {
-                product.stock -= productInCart.quantity
-                // await productService.updateProduct(product._id, product)
-                await product.save()
-                productsPurchased.push(product)
-            }
-        }
-
-        cart.products = cart.products.filter(productCart => {
-            return canceledProducts.includes(productCart.product._id.toString());
-        })
-
-        await cartService.updateCart(cartId, cart.products)
-
-        if (canceledProducts) {
+        if (productsPurchased.length === 0) {
+            res.status(200).json({ success: `No products were purchased due to lack of stock` });
+        } else if (canceledProducts.length > 0) {
             res.status(200).json({ success: `Purchase completed partially`, payload: canceledProducts })
         } else {
             res.status(200).json({ success: `Purchase completed successfully` })

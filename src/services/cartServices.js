@@ -1,4 +1,5 @@
 import ProductDAO from "../dao/mongoose/ProductDAO.js";
+import { productService, ticketService } from "./index.js";
 
 const productDAO = new ProductDAO()
 
@@ -123,5 +124,46 @@ export default class CartService {
         } catch (error) {
             throw new Error(`Cart ${cartId} has no products!`)
         }
+    }
+
+    async purchaseCart(cartId, userEmail) {
+        const cart = await this.getCartById(cartId)
+        let productsPurchased = []
+        let canceledProducts = []
+        let total = 0
+
+        if (cart.products.length === 0) throw new Error(`Cart ${cartId} is empty`)
+
+        for (let i = 0; i < cart.products.length; i++) {
+            let productInCart = cart.products[i]
+            let product = await productService.getProductsById(productInCart.product._id.toString())
+
+            if (product.stock < productInCart.quantity) {
+                canceledProducts.push(product._id.toString())
+            } else {
+                total += product.price * productInCart.quantity
+                product.stock -= productInCart.quantity
+                // await productService.updateProduct(product._id, product)
+                await product.save()
+                productsPurchased.push(product)
+            }
+        }
+
+        cart.products = cart.products.filter(productCart => {
+            return canceledProducts.includes(productCart.product._id.toString())
+        })
+
+        await this.updateCart(cartId, cart.products)
+
+        if (productsPurchased.length > 0) {
+            const newTicket = {
+                amount: total,
+                purchaser: userEmail
+            }
+
+            await ticketService.createTicket(newTicket)
+        }
+
+        return { productsPurchased, canceledProducts, total }
     }
 }
