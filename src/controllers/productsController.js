@@ -1,4 +1,5 @@
 import { productService } from "../repositories/index.js"
+import { generateProduct } from "../utils.js"
 
 export const getProducts = async (req, res) => {
     try {
@@ -60,4 +61,14 @@ export const deleteProduct = (socketServer) => async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: `Deleting product. ${error}` })
     }
+}
+
+export const mockProducts = async (req, res) => {
+    let products = []
+
+    for (let index = 0; index < 100; index++) {
+        products.push(generateProduct())
+    }
+
+    res.send({ status: "success", payload: products })
 }

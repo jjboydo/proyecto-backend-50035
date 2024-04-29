@@ -4,7 +4,7 @@ import passport from 'passport'
 import { dirname } from "path"
 import { fileURLToPath } from 'url'
 import config from './config/config.js'
-import { cartService } from "./repositories/index.js"
+import { fakerES as faker } from "@faker-js/faker"
 
 const __fliename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__fliename)
@@ -46,6 +46,20 @@ export const verifyUserCart = () => {
             return res.status(403).send({ error: "You do not have permission to modify this cart" })
         }
         next()
+    }
+}
+
+export const generateProduct = () => {
+    return {
+        id: faker.database.mongodbObjectId(),
+        title: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        price: faker.commerce.price(),
+        code: faker.string.alphanumeric(8).toUpperCase(),
+        stock: faker.number.int({ min: 1, max: 500 }),
+        status: faker.datatype.boolean(0.95),
+        category: faker.commerce.department(),
+        thumbnails: [faker.image.urlLoremFlickr({ category: 'food' }), faker.image.urlLoremFlickr({ category: 'food' })]
     }
 }
 
