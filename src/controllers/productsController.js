@@ -26,7 +26,7 @@ export const getProductById = async (req, res) => {
     res.json(product)
 }
 
-export const updateProductSocket = (socketServer) => async (req, res) => {
+export const updateProductSocket = (socketServer) => async (req, res, next) => {
     try {
         const newProduct = req.body
         await productService.addProduct(newProduct)
@@ -34,11 +34,11 @@ export const updateProductSocket = (socketServer) => async (req, res) => {
         socketServer.emit('product_updated', products)
         res.status(200).json({ success: "Product added correctly!" })
     } catch (error) {
-        res.status(500).json({ error: `Adding product. ${error}` })
+        next(error)
     }
 }
 
-export const updateProduct = (socketServer) => async (req, res) => {
+export const updateProduct = (socketServer) => async (req, res, next) => {
     try {
         const productId = req.params.pid
         const updatedProduct = req.body
@@ -47,11 +47,11 @@ export const updateProduct = (socketServer) => async (req, res) => {
         socketServer.emit('product_updated', products)
         res.status(200).json({ success: `Product ${productId} successfully modified!` })
     } catch (error) {
-        res.status(500).json({ error: `Updating product. ${error}` })
+        next(error)
     }
 }
 
-export const deleteProduct = (socketServer) => async (req, res) => {
+export const deleteProduct = (socketServer) => async (req, res, next) => {
     try {
         const productId = req.params.pid
         await productService.deleteProduct(productId)
@@ -59,7 +59,7 @@ export const deleteProduct = (socketServer) => async (req, res) => {
         socketServer.emit('product_updated', products)
         res.status(200).json({ success: `Product ${productId} deleted successfully!` })
     } catch (error) {
-        res.status(500).json({ error: `Deleting product. ${error}` })
+        next(error)
     }
 }
 

@@ -1,11 +1,11 @@
 import { cartService } from "../repositories/index.js"
 
-export const addCart = async (req, res) => {
+export const addCart = async (req, res, next) => {
     try {
         await cartService.addCart()
         res.status(200).json({ success: "Cart added correctly!" })
     } catch (error) {
-        res.status(500).json({ error: `Adding new cart. ${error}` })
+        next(error)
     }
 }
 
@@ -16,40 +16,41 @@ export const getCartById = async (req, res) => {
     res.json(cart)
 }
 
-export const addProductToCart = async (req, res) => {
+export const addProductToCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         const productId = req.params.pid
         await cartService.addProductToCart(cartId, productId)
         res.status(200).json({ success: `Product ${productId} added to cart ${cartId} successfully!` })
     } catch (error) {
-        res.status(500).json({ error: `Adding new product to cart. ${error}` })
+        next(error)
     }
 }
 
-export const deleteProductFromCart = async (req, res) => {
+export const deleteProductFromCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         const productId = req.params.pid
         await cartService.deleteProductFromCart(cartId, productId)
         res.status(200).json({ success: `Product ${productId} removed from cart ${cartId} successfully!` })
     } catch (error) {
-        res.status(500).json({ error: `Deleting product from cart. ${error}` })
+        next(error)
+        // res.status(500).json({ error: `Deleting product from cart. ${error}` })
     }
 }
 
-export const updateCart = async (req, res) => {
+export const updateCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         const updatedProducts = req.body
         await cartService.updateCart(cartId, updatedProducts.products)
         res.status(200).json({ success: `Products updated in cart ${cartId} successfully!` })
     } catch (error) {
-        res.status(500).json({ error: `Updating cart. ${error}` })
+        next(error)
     }
 }
 
-export const updateProductFromCart = async (req, res) => {
+export const updateProductFromCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         const productId = req.params.pid
@@ -57,17 +58,17 @@ export const updateProductFromCart = async (req, res) => {
         await cartService.updateProductFromCart(cartId, productId, newQuantity.quantity)
         res.status(200).json({ success: `Product ${productId} from cart ${cartId} updated successfully!` })
     } catch (error) {
-        res.status(500).json({ error: `Updating product in cart. ${error}` })
+        next(error)
     }
 }
 
-export const deleteCart = async (req, res) => {
+export const deleteCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         await cartService.deleteCart(cartId)
         res.status(200).json({ success: `Cart ${cartId} removed successfully!` })
     } catch (error) {
-        res.status(500).json({ error: `Deleting cart. ${error}` })
+        next(error)
     }
 }
 
@@ -87,6 +88,6 @@ export const purchaseCart = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).json({ error: `Error finalizing purchase. ${error}` })
+        next(error)
     }
 }

@@ -1,3 +1,6 @@
+import CustomError from "../services/errors/CustomError.js";
+import EErrors from "../services/errors/enums.js";
+import { generateCartErrorInfo, generateEmptyCartErrorInfo, generateProductExistsErrorInfo } from "../services/errors/info.js";
 import { productService, ticketService } from "./index.js";
 
 export default class CartRepository {
@@ -7,10 +10,22 @@ export default class CartRepository {
 
     async #productExists(productId) {
         if (!productId || productId.length !== 24) {
-            throw new Error(`Product ${productId} does not exist!`)
+            throw new CustomError({
+                name: `Product Error`,
+                cause: generateProductExistsErrorInfo(productId),
+                message: 'Error searching for a product',
+                code: EErrors.INVALID_TYPES_ERROR
+            })
         }
         const product = await productService.getProductsById(productId);
-        if (!product) throw new Error(`Product ${productId} does not exist!`);
+        if (!product) {
+            throw new CustomError({
+                name: `Product Error`,
+                cause: generateProductExistsErrorInfo(productId),
+                message: 'Error searching for a product',
+                code: EErrors.INVALID_TYPES_ERROR
+            })
+        }
     }
     async addCart() {
         try {
@@ -18,7 +33,7 @@ export default class CartRepository {
             console.log("Carrito agregado correctamente!")
             return result
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
     }
 
@@ -41,7 +56,7 @@ export default class CartRepository {
             const cartExists = await this.dao.getCartById(cartId)
             return cartExists
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
     }
 
@@ -49,7 +64,14 @@ export default class CartRepository {
         try {
 
             const cart = await this.getCartById(cartId)
-            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+            if (!cart) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateCartErrorInfo(cartId),
+                    message: 'Error searching for a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
 
             await this.#productExists(productId)
 
@@ -66,60 +88,103 @@ export default class CartRepository {
             await this.dao.updateCart(cartId, cart)
             console.log(`Producto agregado al carrito ${cartId} correctamente!`)
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
     }
 
     async deleteProductFromCart(cartId, productId) {
         try {
             const cart = await this.getCartById(cartId)
-            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+            if (!cart) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateCartErrorInfo(cartId),
+                    message: 'Error searching for a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
 
             await this.#productExists(productId)
             let productsUpdated = cart.products.filter(p => p.product._id.toString() !== productId)
-            if (cart.products.length === productsUpdated.length) throw new Error(`Product ${productId} does not exist!`)
+            if (cart.products.length === productsUpdated.length) {
+                throw new CustomError({
+                    name: `Product Error`,
+                    cause: generateProductExistsErrorInfo(productId),
+                    message: 'Error searching for a product',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
 
             cart.products = productsUpdated
             await this.dao.updateCart(cartId, cart)
             console.log(`Producto eliminado del carrito ${cartId} correctamente!`)
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
     }
 
     async updateProductFromCart(cartId, productId, quantity) {
         try {
             const cart = await this.getCartById(cartId)
-            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+            if (!cart) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateCartErrorInfo(cartId),
+                    message: 'Error searching for a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
 
             await this.#productExists(productId)
             await this.dao.updateProductFromCart({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
             console.log("Cantidad actualizada correctamente!")
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
     }
 
     async updateCart(cartId, updatedProducts) {
         try {
             const cart = await this.getCartById(cartId)
-            if (!cart) throw new Error(`Cart ${cartId} does not exist!`)
+            if (!cart) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateCartErrorInfo(cartId),
+                    message: 'Error searching for a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
 
             await this.dao.updateProductFromCart({ _id: cartId }, { $set: { products: updatedProducts } })
             console.log("Carrito actualizado correctamente!")
         } catch (error) {
-            throw new Error(error.message)
+            throw error;
         }
     }
 
     async deleteCart(cartId) {
         try {
             const cart = await this.getCartById(cartId)
-            if (cart.products.length === 0) throw new Error(`Cart ${cartId} has no products!`)
+            if (!cart) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateCartErrorInfo(cartId),
+                    message: 'Error searching for a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
+            if (cart.products.length === 0) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateEmptyCartErrorInfo(cartId),
+                    message: 'Error deleting a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
             await this.dao.deleteCart(cartId)
             console.log("Carrito eliminado correctamente!")
         } catch (error) {
-            throw new Error(`Cart ${cartId} has no products!`)
+            throw error;
         }
     }
 
@@ -129,7 +194,14 @@ export default class CartRepository {
         let canceledProducts = []
         let total = 0
 
-        if (cart.products.length === 0) throw new Error(`Cart ${cartId} is empty`)
+        if (cart.products.length === 0) {
+            throw new CustomError({
+                name: `Cart Error`,
+                cause: generateEmptyCartErrorInfo(cartId),
+                message: 'Error getting a cart',
+                code: EErrors.INVALID_TYPES_ERROR
+            })
+        }
 
         for (let i = 0; i < cart.products.length; i++) {
             let productInCart = cart.products[i]
@@ -140,7 +212,6 @@ export default class CartRepository {
             } else {
                 total += product.price * productInCart.quantity
                 product.stock -= productInCart.quantity
-                // await productService.updateProduct(product._id, product)
                 await product.save()
                 productsPurchased.push(product)
             }

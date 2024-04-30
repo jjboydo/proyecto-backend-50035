@@ -11,7 +11,7 @@ export default class TicketRepository {
             })
             console.log("Ticket creado correctamente!")
         } catch (error) {
-            throw new Error(error.message)
+            throw error
         }
     }
 }

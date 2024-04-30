@@ -13,6 +13,8 @@ import productsRouter from "./routes/products.router.js"
 import sessionsRouter from "./routes/sessions.router.js"
 import viewsRouter from "./routes/views.router.js"
 
+import errorHandler from "./middlewares/errors/index.js"
+
 import messagesModel from "./dao/models/messages.model.js"
 
 import { Server } from "socket.io"
@@ -66,6 +68,7 @@ app.set("view engine", "handlebars")
 app.use(express.static(__dirname + "/public"))
 app.use("/", viewsRouter)
 
+
 socketServer.on("connection", socket => {
     console.log("Nuevo cliente conectado")
 
@@ -80,3 +83,5 @@ socketServer.on("connection", socket => {
         socketServer.emit('messageLogs', messages)
     })
 })
+
+app.use(errorHandler)

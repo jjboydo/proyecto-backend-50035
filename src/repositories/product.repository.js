@@ -1,3 +1,7 @@
+import CustomError from "../services/errors/CustomError.js";
+import EErrors from "../services/errors/enums.js";
+import { generateProductCodeErrorInfo, generateProductErrorInfo, generateProductExistsErrorInfo } from "../services/errors/info.js";
+
 export default class ProductRepository {
     constructor(dao) {
         this.dao = dao
@@ -5,13 +9,27 @@ export default class ProductRepository {
 
     async #validateCode(code) {
         const product = await this.dao.findProductByCode(code);
-        if (product) throw new Error("There is already a product with that code");
+        if (product) {
+            throw new CustomError({
+                name: `Product Error`,
+                cause: generateProductCodeErrorInfo(code),
+                message: 'Error adding-updating a product',
+                code: EErrors.INVALID_TYPES_ERROR
+            })
+        }
     }
 
     #validateProduct(product) {
         const { title, description, price, code, stock, category } = product
         const isValid = title && description && price && code && stock && category
-        if (!isValid) throw new Error("The product is not valid")
+        if (!isValid) {
+            throw new CustomError({
+                name: `Product Error`,
+                cause: generateProductErrorInfo({ title, description, price, code, stock, category }),
+                message: 'Error adding-updating a product',
+                code: EErrors.MISSING_DATA
+            })
+        }
     }
 
     async addProduct(product) {
@@ -30,7 +48,7 @@ export default class ProductRepository {
             })
             console.log("Producto agregado correctamente!")
         } catch (error) {
-            throw new Error(error.message)
+            throw error
         }
     }
 
@@ -81,16 +99,25 @@ export default class ProductRepository {
             await this.dao.updateProduct(productId, fieldsToUpdate)
             console.log("Producto modificado correctamente!")
         } catch (error) {
-            throw new Error(`Product ${productId} does not exist!`)
+            throw error
         }
     }
 
     async deleteProduct(productId) {
         try {
+            const product = await this.getProductsById(productId)
+            if (!product) {
+                throw new CustomError({
+                    name: `Product Error`,
+                    cause: generateProductExistsErrorInfo(productId),
+                    message: 'Error deleting a product',
+                    code: EErrors.MISSING_DATA
+                })
+            }
             await this.dao.deleteProduct(productId)
             console.log("Producto eliminado correctamente!")
         } catch (error) {
-            throw new Error(`Product ${productId} does not exist!`)
+            throw error
         }
     }
 }
