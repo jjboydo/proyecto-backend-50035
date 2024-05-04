@@ -14,6 +14,7 @@ import sessionsRouter from "./routes/sessions.router.js"
 import viewsRouter from "./routes/views.router.js"
 
 import errorHandler from "./middlewares/errors/index.js"
+import { addLogger } from "./utils/logger.js"
 
 import messagesModel from "./dao/models/messages.model.js"
 
@@ -23,6 +24,7 @@ import __dirname from "./utils.js"
 const PORT = config.port
 const app = express()
 const httpServer = app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`))
+app.use(addLogger)
 
 // Conexión a base de datos
 mongoose.connect(config.mongoUrl)
@@ -67,6 +69,17 @@ app.set("views", __dirname + "/views")
 app.set("view engine", "handlebars")
 app.use(express.static(__dirname + "/public"))
 app.use("/", viewsRouter)
+
+// Prueba de logs
+
+app.get('/loggerTest', (req, res) => {
+    req.logger.fatal('fatal');
+    req.logger.error('error');
+    req.logger.warning('warning');
+    req.logger.info('info');
+    req.logger.debug('debug');
+    res.send('Logs sent to console');
+})
 
 
 socketServer.on("connection", socket => {
