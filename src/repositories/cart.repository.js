@@ -2,6 +2,9 @@ import CustomError from "../services/errors/CustomError.js";
 import EErrors from "../services/errors/enums.js";
 import { generateCartErrorInfo, generateEmptyCartErrorInfo, generateProductExistsErrorInfo } from "../services/errors/info.js";
 import { productService, ticketService } from "./index.js";
+import { getLogger } from "../utils/logger.js";
+
+const logger = getLogger()
 
 export default class CartRepository {
     constructor(dao) {
@@ -30,9 +33,10 @@ export default class CartRepository {
     async addCart() {
         try {
             let result = await this.dao.createCart()
-            console.log("Carrito agregado correctamente!")
+            logger.info("Cart added successfully!")
             return result
         } catch (error) {
+            logger.fatal("Error adding a cart: ")
             throw error;
         }
     }
@@ -42,7 +46,7 @@ export default class CartRepository {
             let result = await this.dao.getCarts()
             return result
         } catch (error) {
-            console.error('Error getting carts: ', error)
+            logger.fatal("Error getting carts: ")
             return []
         }
     }
@@ -50,12 +54,13 @@ export default class CartRepository {
     async getCartById(cartId) {
         try {
             if (!cartId || cartId.length !== 24) {
-                console.log('Invalid cart ID')
+                logger.warning('Invalid cart ID')
                 return
             }
             const cartExists = await this.dao.getCartById(cartId)
             return cartExists
         } catch (error) {
+            req.logger.error('Error getting cart: ')
             throw error;
         }
     }
@@ -86,8 +91,9 @@ export default class CartRepository {
                 cart.products.push(newProduct)
             }
             await this.dao.updateCart(cartId, cart)
-            console.log(`Producto agregado al carrito ${cartId} correctamente!`)
+            logger.info(`Product added to cart ${cartId} correctly!`)
         } catch (error) {
+            logger.fatal(`Error adding product to cart`)
             throw error;
         }
     }
@@ -117,8 +123,9 @@ export default class CartRepository {
 
             cart.products = productsUpdated
             await this.dao.updateCart(cartId, cart)
-            console.log(`Producto eliminado del carrito ${cartId} correctamente!`)
+            logger.info(`Product deleted from cart ${cartId} correctly!`)
         } catch (error) {
+            logger.fatal(`Error deleting product from cart`)
             throw error;
         }
     }
@@ -137,8 +144,9 @@ export default class CartRepository {
 
             await this.#productExists(productId)
             await this.dao.updateProductFromCart({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
-            console.log("Cantidad actualizada correctamente!")
+            logger.info("Quantity updated successfully!")
         } catch (error) {
+            logger.fatal("Error updating quantity")
             throw error;
         }
     }
@@ -156,8 +164,9 @@ export default class CartRepository {
             }
 
             await this.dao.updateProductFromCart({ _id: cartId }, { $set: { products: updatedProducts } })
-            console.log("Carrito actualizado correctamente!")
+            logger.info("Cart updated successfully!")
         } catch (error) {
+            logger.fatal("Error updating cart")
             throw error;
         }
     }
@@ -182,8 +191,9 @@ export default class CartRepository {
                 })
             }
             await this.dao.deleteCart(cartId)
-            console.log("Carrito eliminado correctamente!")
+            logger.info("Cart deleted successfully!")
         } catch (error) {
+            logger.fatal("Error deleting cart")
             throw error;
         }
     }
@@ -231,6 +241,8 @@ export default class CartRepository {
 
             await ticketService.createTicket(newTicket)
         }
+
+        logger.info(`Cart ${cartId} purchased successfully!`)
 
         return { productsPurchased, canceledProducts, total }
     }

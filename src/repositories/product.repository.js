@@ -1,6 +1,9 @@
 import CustomError from "../services/errors/CustomError.js";
 import EErrors from "../services/errors/enums.js";
 import { generateProductCodeErrorInfo, generateProductErrorInfo, generateProductExistsErrorInfo } from "../services/errors/info.js";
+import { getLogger } from "../utils/logger.js";
+
+const logger = getLogger()
 
 export default class ProductRepository {
     constructor(dao) {
@@ -46,8 +49,9 @@ export default class ProductRepository {
                 category: product.category,
                 thumbnails: product.thumbnails || [],
             })
-            console.log("Producto agregado correctamente!")
+            logger.info("Product added successfully!")
         } catch (error) {
+            logger.fatal("Error adding a product: ")
             throw error
         }
     }
@@ -85,7 +89,7 @@ export default class ProductRepository {
 
     async getProductsById(productId) {
         if (!productId || productId.length !== 24) {
-            console.log('Invalid product ID')
+            logger.warning('Invalid product ID')
             return
         }
         const productExists = await this.dao.getProductById(productId)
@@ -97,8 +101,9 @@ export default class ProductRepository {
             delete fieldsToUpdate.id
             await this.#validateCode(fieldsToUpdate.code)
             await this.dao.updateProduct(productId, fieldsToUpdate)
-            console.log("Producto modificado correctamente!")
+            logger.info("Product modified successfully!")
         } catch (error) {
+            logger.fatal("Error updating a product: ")
             throw error
         }
     }
@@ -115,8 +120,9 @@ export default class ProductRepository {
                 })
             }
             await this.dao.deleteProduct(productId)
-            console.log("Producto eliminado correctamente!")
+            logger.info("Product deleted successfully!")
         } catch (error) {
+            logger.fatal("Error deleting a product: ")
             throw error
         }
     }

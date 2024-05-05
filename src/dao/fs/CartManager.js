@@ -18,7 +18,7 @@ export default class CartManager {
         } catch (error) {
             if (error.code === "ENOENT") {
                 await fs.writeFile(this.path, "[]")
-                console.log("Product file created:", this.path)
+                req.logger.info(`Product file created: ${this.path}`)
             } else {
                 throw new Error("Error accessing product file:", error)
             }
@@ -49,7 +49,7 @@ export default class CartManager {
             }
             this.carts.push(newCart)
             await this.writeToFile(this.carts, this.path)
-            console.log("Carrito agregado correctamente!")
+            req.logger.info("Cart added successfully!")
         } catch (error) {
             throw new Error(error.message)
         }
@@ -63,7 +63,7 @@ export default class CartManager {
             }
             return JSON.parse(cartsString)
         } catch (error) {
-            console.error('Error reading carts file: ', error)
+            req.logger.fatal('Error reading carts file: ', error)
             return []
         }
     }
@@ -93,8 +93,9 @@ export default class CartManager {
             }
 
             await this.writeToFile(this.carts, this.path)
-            console.log(`Producto agregado al carrito ${cartId} correctamente!`)
+            req.logger.info(`Product added to cart ${cartId} successfully!`)
         } catch (error) {
+            req.logger.fatal('Error adding product to cart: ', error)
             throw new Error(error.message)
         }
     }

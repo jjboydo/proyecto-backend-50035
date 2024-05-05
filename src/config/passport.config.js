@@ -5,12 +5,14 @@ import local from "passport-local"
 import userService from "../dao/models/user.model.js"
 import { cartService } from "../repositories/index.js"
 import { createHash, isValidPassword } from "../utils.js"
+import { getLogger } from "../utils/logger.js"
 
 import config from "./config.js"
 
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
 const LocalStrategy = local.Strategy
+const logger = getLogger()
 
 
 const initializePassport = () => {
@@ -20,7 +22,7 @@ const initializePassport = () => {
             try {
                 let user = await userService.findOne({ email: username })
                 if (user) {
-                    console.log("User already exists")
+                    logger.warning("User already exists")
                     return done(null, false, { messages: "User already exists" })
                 }
                 const cart = await cartService.addCart()
@@ -55,7 +57,7 @@ const initializePassport = () => {
             }
             const user = await userService.findOne({ email: username }).populate("cart")
             if (!user) {
-                console.log("User doesn´t exist")
+                logeer.warning("User doesn´t exist")
                 return done(null, false, { messages: "No user found" })
             }
             if (!isValidPassword(user, password)) return done(null, false, { messages: "Incorrect password" })
@@ -85,7 +87,7 @@ const initializePassport = () => {
         callbackURL: "http://localhost:8080/api/sessions/githubcallback"
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log(profile)
+            logger.debug(`Github profile: ${profile}`)
             let user = await userService.findOne({ email: profile._json.email })
             if (!user) {
                 const cart = await cartService.addCart()

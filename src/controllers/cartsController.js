@@ -35,7 +35,6 @@ export const deleteProductFromCart = async (req, res, next) => {
         res.status(200).json({ success: `Product ${productId} removed from cart ${cartId} successfully!` })
     } catch (error) {
         next(error)
-        // res.status(500).json({ error: `Deleting product from cart. ${error}` })
     }
 }
 

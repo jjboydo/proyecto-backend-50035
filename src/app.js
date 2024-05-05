@@ -17,22 +17,24 @@ import errorHandler from "./middlewares/errors/index.js"
 import { addLogger } from "./utils/logger.js"
 
 import messagesModel from "./dao/models/messages.model.js"
+import { getLogger } from "./utils/logger.js"
 
 import { Server } from "socket.io"
 import __dirname from "./utils.js"
 
 const PORT = config.port
 const app = express()
-const httpServer = app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`))
+const logger = getLogger()
+const httpServer = app.listen(PORT, () => logger.info(`Servidor corriendo en el puerto ${PORT}`))
 app.use(addLogger)
 
 // Conexión a base de datos
 mongoose.connect(config.mongoUrl)
     .then(() => {
-        console.log("Conectado a la base de datos")
+        logger.info("Conectado a la base de datos")
     })
     .catch(error => {
-        console.error("Error al conectarse a la base de datos", error)
+        logger.fatal("Error al conectarse a la base de datos", error)
     })
 
 // Middlewares
@@ -83,7 +85,7 @@ app.get('/loggerTest', (req, res) => {
 
 
 socketServer.on("connection", socket => {
-    console.log("Nuevo cliente conectado")
+    logger.info("Nuevo cliente conectado")
 
     socket.on('message', async (data) => {
         await messagesModel.create({ user: data.user, message: data.message })

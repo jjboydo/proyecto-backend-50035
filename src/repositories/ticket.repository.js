@@ -1,3 +1,7 @@
+import { getLogger } from "../utils/logger.js"
+
+const logger = getLogger()
+
 export default class TicketRepository {
     constructor(dao) {
         this.dao = dao
@@ -9,8 +13,9 @@ export default class TicketRepository {
                 amount: ticket.amount,
                 purchaser: ticket.purchaser
             })
-            console.log("Ticket creado correctamente!")
+            logger.info("Ticket created successfully!")
         } catch (error) {
+            logger.fatal("Error creating a ticket")
             throw error
         }
     }

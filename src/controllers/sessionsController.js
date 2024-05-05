@@ -2,11 +2,12 @@ import config from "../config/config.js"
 import UserDTO from "../dao/DTOs/user.dto.js"
 import { generateToken } from "../utils.js"
 export const register = async (req, res) => {
-    res.send({ status: "success", message: "usuario registrado" })
+    req.logger.info('User registered')
+    res.send({ status: "success", message: "User registered" })
 }
 
 export const failRegister = async (req, res) => {
-    console.log('Registro fallido')
+    req.logger.error('Failed register')
     res.send({ error: "Failed register" })
 }
 
@@ -14,6 +15,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body
     let tokenUser
     if (!email || !password) {
+        req.logger.error('Missing data')
         return res.status(400).send({ status: "error", error: "Missing data" });
     }
     if (email === config.adminName && password === config.adminPassword) {
@@ -42,6 +44,7 @@ export const login = async (req, res) => {
 }
 
 export const failLogin = async (req, res) => {
+    req.logger.error('Failed login')
     res.send({ error: 'Failed login' })
 }
 
@@ -54,7 +57,7 @@ export const githubCallback = async (req, res) => {
         role: "user"
     }
     const token = generateToken(tokenUser)
-    console.log(token)
+    req.logger.info(token)
     res.cookie(config.cookieToken, token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
     // res.redirect("/products")
 }

@@ -13,7 +13,7 @@ export default class ProductManager {
         } catch (error) {
             if (error.code === "ENOENT") {
                 await fs.writeFile(this.path, "[]")
-                console.log("Product file created:", this.path)
+                req.logger.info(`Product file created: ${this.path}`)
             } else {
                 throw new Error("Error accessing product file:", error)
             }
@@ -65,7 +65,7 @@ export default class ProductManager {
             }
             this.products.push(newProduct)
             await this.writeToFile(this.products, this.path)
-            console.log("Producto agregado correctamente!")
+            req.logger.info("Product added successfully!")
         } catch (error) {
             throw new Error(error.message)
         }
@@ -99,7 +99,7 @@ export default class ProductManager {
             this.#validateCode(fieldsToUpdate.code)
             Object.assign(this.products[productExists], fieldsToUpdate)
             await this.writeToFile(this.products, this.path)
-            console.log("Producto modificado correctamente!")
+            req.logger.info("Product modified successfully!")
         } catch (error) {
             throw new Error(error.message)
         }
@@ -113,7 +113,7 @@ export default class ProductManager {
             }
             this.products = productsFilter
             await this.writeToFile(this.products, this.path)
-            console.log("Producto eliminado correctamente!")
+            req.logger.info("Product deleted successfully!")
         } catch (error) {
             throw new Error(error.message)
         }

@@ -10,11 +10,11 @@ const customLevelsOptions = {
         debug: 5,
     },
     colors: {
-        fatal: 'redBG',
-        error: 'red',
-        warning: 'yellow',
-        info: 'green',
-        debug: 'blue',
+        fatal: 'bold italic redBG',
+        error: 'bold italic red',
+        warning: 'bold italic yellow',
+        info: 'bold italic blue',
+        debug: 'italic cyan',
     },
 }
 
@@ -64,3 +64,8 @@ export const addLogger = (req, res, next) => {
     req.logger = env === 'production' ? prodLogger : devLogger;
     next();
 }
+
+export const getLogger = () => {
+    const env = process.env.NODE_ENV || 'development';
+    return env === 'production' ? prodLogger : devLogger;
+};

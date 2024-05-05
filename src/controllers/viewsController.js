@@ -89,12 +89,6 @@ export const getProfile = async (req, res) => {
 }
 
 export const getLogout = (req, res) => {
-    // req.session.destroy(err => {
-    //     if (err) {
-    //         return res.json({ status: 'error logout', body: err })
-    //     }
-    //     console.log("Logout OK")
-    //     res.redirect("/login")
-    // })
+    req.logger.info('User logged out')
     res.clearCookie(config.cookieToken).redirect("/login")
 }
