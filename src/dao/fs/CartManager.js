@@ -95,7 +95,7 @@ export default class CartManager {
             await this.writeToFile(this.carts, this.path)
             req.logger.info(`Product added to cart ${cartId} successfully!`)
         } catch (error) {
-            req.logger.fatal('Error adding product to cart: ', error)
+            req.logger.error('Error adding product to cart: ')
             throw new Error(error.message)
         }
     }

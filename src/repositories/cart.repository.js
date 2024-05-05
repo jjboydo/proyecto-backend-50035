@@ -93,7 +93,7 @@ export default class CartRepository {
             await this.dao.updateCart(cartId, cart)
             logger.info(`Product added to cart ${cartId} correctly!`)
         } catch (error) {
-            logger.fatal(`Error adding product to cart`)
+            logger.error(`Error adding product to cart`)
             throw error;
         }
     }
@@ -125,7 +125,7 @@ export default class CartRepository {
             await this.dao.updateCart(cartId, cart)
             logger.info(`Product deleted from cart ${cartId} correctly!`)
         } catch (error) {
-            logger.fatal(`Error deleting product from cart`)
+            logger.error(`Error deleting product from cart`)
             throw error;
         }
     }
@@ -146,7 +146,7 @@ export default class CartRepository {
             await this.dao.updateProductFromCart({ _id: cartId, "products.product": productId }, { $set: { "products.$.quantity": quantity } })
             logger.info("Quantity updated successfully!")
         } catch (error) {
-            logger.fatal("Error updating quantity")
+            logger.error("Error updating quantity")
             throw error;
         }
     }
@@ -166,7 +166,7 @@ export default class CartRepository {
             await this.dao.updateProductFromCart({ _id: cartId }, { $set: { products: updatedProducts } })
             logger.info("Cart updated successfully!")
         } catch (error) {
-            logger.fatal("Error updating cart")
+            logger.error("Error updating cart")
             throw error;
         }
     }
@@ -193,7 +193,7 @@ export default class CartRepository {
             await this.dao.deleteCart(cartId)
             logger.info("Cart deleted successfully!")
         } catch (error) {
-            logger.fatal("Error deleting cart")
+            logger.error("Error deleting cart")
             throw error;
         }
     }

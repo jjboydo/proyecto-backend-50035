@@ -79,6 +79,7 @@ app.get('/loggerTest', (req, res) => {
     req.logger.error('error');
     req.logger.warning('warning');
     req.logger.info('info');
+    req.logger.http('http');
     req.logger.debug('debug');
     res.send('Logs sent to console');
 })

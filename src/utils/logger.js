@@ -14,7 +14,8 @@ const customLevelsOptions = {
         error: 'bold italic red',
         warning: 'bold italic yellow',
         info: 'bold italic blue',
-        debug: 'italic cyan',
+        http: 'bold italic magenta',
+        debug: 'italic cyanBG',
     },
 }
 
@@ -45,7 +46,7 @@ const prodLogger = winston.createLogger({
             filename: 'logs/errors.log',
             level: 'error',
             format: winston.format.combine(
-                winston.format.timestamp(),
+                winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
                 winston.format.json()
             )
         }),
@@ -60,12 +61,13 @@ Object.keys(customLevelsOptions.levels).forEach(level => {
 })
 
 export const addLogger = (req, res, next) => {
-    const env = process.env.NODE_ENV || 'development';
+    const env = process.env.MODE || 'development';
     req.logger = env === 'production' ? prodLogger : devLogger;
+    req.logger.http(`${req.method} en ${req.url} - ${new Date().toLocaleString()}`);
     next();
 }
 
 export const getLogger = () => {
-    const env = process.env.NODE_ENV || 'development';
+    const env = process.env.MODE || 'development';
     return env === 'production' ? prodLogger : devLogger;
 };

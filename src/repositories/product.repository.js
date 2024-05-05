@@ -51,7 +51,7 @@ export default class ProductRepository {
             })
             logger.info("Product added successfully!")
         } catch (error) {
-            logger.fatal("Error adding a product: ")
+            logger.error("Error adding a product: ")
             throw error
         }
     }
@@ -82,7 +82,7 @@ export default class ProductRepository {
             }
             return productsResponse
         } catch (error) {
-            console.error('Error getting products: ', error)
+            logger.error('Error getting products')
             return []
         }
     }
@@ -103,7 +103,7 @@ export default class ProductRepository {
             await this.dao.updateProduct(productId, fieldsToUpdate)
             logger.info("Product modified successfully!")
         } catch (error) {
-            logger.fatal("Error updating a product: ")
+            logger.error("Error updating a product: ")
             throw error
         }
     }
@@ -122,7 +122,7 @@ export default class ProductRepository {
             await this.dao.deleteProduct(productId)
             logger.info("Product deleted successfully!")
         } catch (error) {
-            logger.fatal("Error deleting a product: ")
+            logger.error("Error deleting a product: ")
             throw error
         }
     }
