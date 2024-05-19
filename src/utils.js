@@ -5,6 +5,7 @@ import { dirname } from "path"
 import { fileURLToPath } from 'url'
 import config from './config/config.js'
 import { fakerES as faker } from "@faker-js/faker"
+import { productService } from "./repositories/index.js"
 
 const __fliename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__fliename)
@@ -47,6 +48,35 @@ export const verifyUserCart = () => {
         }
         next()
     }
+}
+
+export const checkOwnership = () => {
+    return async (req, res, next) => {
+        const productId = req.params.pid
+        const product = await productService.getProductsById(productId)
+
+        if (!product) return res.status(404).send({ error: `Product ${productId} does not exist!` })
+
+        if (product.owner !== req.user.id && req.user.role !== "admin") {
+            return res.status(403).send({ error: "You do not have permission to modify this product" })
+        }
+        next()
+    }
+}
+
+export const checkProductOwner = () => {
+    return async (req, res, next) => {
+        const userEmail = req.user.email
+        const productId = req.params.pid
+        const product = await productService.getProductsById(productId)
+
+        if (product.owner === userEmail) {
+            return res.status(403).send({ error: "You cannot add your own products to your cart" })
+        }
+
+        next()
+    }
+
 }
 
 export const generateProduct = () => {

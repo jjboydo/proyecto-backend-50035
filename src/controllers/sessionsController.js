@@ -1,5 +1,6 @@
 import config from "../config/config.js"
 import UserDTO from "../dao/DTOs/user.dto.js"
+import userService from "../dao/models/user.model.js"
 import { generateToken } from "../utils.js"
 export const register = async (req, res) => {
     req.logger.info('User registered')
@@ -34,7 +35,7 @@ export const login = async (req, res) => {
             email: req.user.email,
             age: req.user.age,
             cartId: req.user.cart._id,
-            role: "user"
+            role: req.user.role
         }
         // req.session.admin = false
     }
@@ -65,4 +66,20 @@ export const githubCallback = async (req, res) => {
 export const current = (req, res) => {
     let user = new UserDTO(req.user)
     res.send(user);
+}
+
+export const changeRole = async (req, res) => {
+    try {
+        const user = await userService.findById(req.params.uid)
+
+        if (!user) {
+            return res.status(404).send('User not found')
+        }
+
+        user.role = user.role === 'user' ? 'user_premium' : 'user'
+        await user.save()
+        res.send(user)
+    } catch (error) {
+        res.status(500).send('Error changing role')
+    }
 }

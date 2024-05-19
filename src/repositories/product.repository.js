@@ -35,7 +35,7 @@ export default class ProductRepository {
         }
     }
 
-    async addProduct(product) {
+    async addProduct(product, userId) {
         try {
             await this.#validateCode(product.code)
             this.#validateProduct(product)
@@ -48,6 +48,7 @@ export default class ProductRepository {
                 stock: product.stock,
                 category: product.category,
                 thumbnails: product.thumbnails || [],
+                owner: userId
             })
             logger.info("Product added successfully!")
         } catch (error) {

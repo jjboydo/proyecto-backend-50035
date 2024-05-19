@@ -57,7 +57,7 @@ const initializePassport = () => {
             }
             const user = await userService.findOne({ email: username }).populate("cart")
             if (!user) {
-                logeer.warning("User doesn´t exist")
+                logger.warning("User doesn´t exist")
                 return done(null, false, { messages: "No user found" })
             }
             if (!isValidPassword(user, password)) return done(null, false, { messages: "Incorrect password" })
