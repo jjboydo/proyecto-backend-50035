@@ -19,7 +19,7 @@ export default (socketServer) => {
 
     router.post("/", passportCall('jwt'), applyPolicy(["ADMIN", "USER_PREMIUM"]), updateProductSocket(socketServer))
 
-    router.put("/:pid", passportCall('jwt'), applyPolicy(["ADMIN", "USER_PREMIUM"]), updateProduct(socketServer))
+    router.put("/:pid", passportCall('jwt'), applyPolicy(["ADMIN", "USER_PREMIUM"]), checkOwnership(), updateProduct(socketServer))
 
     router.delete("/:pid", passportCall('jwt'), applyPolicy(["ADMIN", "USER_PREMIUM"]), checkOwnership(), deleteProduct(socketServer))
 

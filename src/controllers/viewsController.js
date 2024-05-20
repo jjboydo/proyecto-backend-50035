@@ -92,3 +92,17 @@ export const getLogout = (req, res) => {
     req.logger.info('User logged out')
     res.clearCookie(config.cookieToken).redirect("/login")
 }
+
+export const getResetPassword = async (req, res) => {
+    const token = req.params.token
+    res.render("resetPassword", {
+        token,
+        style: "home.css"
+    })
+}
+
+export const getRecoverPassword = async (req, res) => {
+    res.render("recoverPassword", {
+        style: "home.css"
+    })
+}

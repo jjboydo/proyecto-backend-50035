@@ -1,7 +1,10 @@
 import config from "../config/config.js"
 import UserDTO from "../dao/DTOs/user.dto.js"
 import userService from "../dao/models/user.model.js"
-import { generateToken } from "../utils.js"
+import { createHash, generateToken, isValidPassword, validateToken } from "../utils.js"
+import MailingService from "../services/mailing.js"
+
+
 export const register = async (req, res) => {
     req.logger.info('User registered')
     res.send({ status: "success", message: "User registered" })
@@ -82,4 +85,77 @@ export const changeRole = async (req, res) => {
     } catch (error) {
         res.status(500).send('Error changing role')
     }
+}
+
+export const recoverPassword = async (req, res) => {
+    const { email } = req.body
+    const user = await userService.findOne({ email: email })
+    if (!user) {
+        return res.status(404).send('User not found')
+    }
+
+    const tokenUser = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        age: user.age,
+        cartId: user.cart._id,
+        role: user.role
+    }
+
+    const token = generateToken(tokenUser)
+
+    const mailer = new MailingService()
+
+    const mailOptions = {
+        from: config.email,
+        to: user.email,
+        subject: "Recuperar contraseña",
+        html: `<p>Haga click en el siguiente enlace para recuperar la contraseña: </p>
+        <a href="http://localhost:${config.port}/api/sessions/reset-password/${token}">Recuperar contraseña</a>`
+    }
+
+    await mailer.sendMail(mailOptions)
+
+    res.status(200).send({ status: "success", message: 'Email sent' })
+}
+
+export const recoverTokenPassword = async (req, res) => {
+    try {
+        const token = req.params.token
+        const decoded = validateToken(token)
+
+        if (!decoded) {
+            res.redirect('/recover-password')
+        }
+
+        res.redirect(`/reset-password/${token}`)
+    } catch (error) {
+        req.logger.error('Error recovering password')
+        res.redirect('/recover-password')
+    }
+}
+
+export const updatePassword = async (req, res) => {
+    const { password } = req.body
+    const token = req.params.token
+    const decoded = validateToken(token)
+
+    const user = await userService.findOne({ email: decoded.email });
+
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+
+    if (isValidPassword(user, password)) {
+        return res.status(400).send({ status: "error", message: 'The new password must be different from the previous one' });
+    }
+
+    const hashedPassword = createHash(password)
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res.status(200).send({ status: "success", message: 'Password updated' });
 }

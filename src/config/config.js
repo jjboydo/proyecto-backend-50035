@@ -22,5 +22,9 @@ export default {
     adminPassword: process.env.ADMIN_PASSWORD,
     privateKey: process.env.PRIVATE_KEY,
     cookieToken: process.env.TOKEN_COOKIE,
-    mode: process.env.MODE
+    mode: process.env.MODE,
+    email: process.env.MAIL_USER,
+    emailPassword: process.env.MAIL_PASSWORD,
+    emailService: process.env.MAIL_SERVICE,
+    emailHost: process.env.MAIL_HOST
 }

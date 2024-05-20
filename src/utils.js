@@ -16,7 +16,11 @@ export const isValidPassword = (user, password) => bcrypt.compareSync(password, 
 const PRIVATE_KEY = config.privateKey
 
 export const generateToken = (user) => {
-    return jwt.sign(user, PRIVATE_KEY, { expiresIn: "24h" })
+    return jwt.sign(user, PRIVATE_KEY, { expiresIn: "1h" })
+}
+
+export const validateToken = (token) => {
+    return jwt.verify(token, PRIVATE_KEY)
 }
 
 export const passportCall = (strategy) => {
@@ -57,7 +61,7 @@ export const checkOwnership = () => {
 
         if (!product) return res.status(404).send({ error: `Product ${productId} does not exist!` })
 
-        if (product.owner !== req.user.id && req.user.role !== "admin") {
+        if (product.owner !== req.user.email && req.user.role !== "admin") {
             return res.status(403).send({ error: "You do not have permission to modify this product" })
         }
         next()
