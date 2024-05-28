@@ -1,6 +1,5 @@
-import { de } from "@faker-js/faker";
 import mongoose from "mongoose";
-import mongoosePaginate from "mongoose-paginate-v2"
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const productsCollection = "products"
 

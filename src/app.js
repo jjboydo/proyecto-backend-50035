@@ -19,6 +19,9 @@ import { addLogger } from "./utils/logger.js"
 import messagesModel from "./dao/models/messages.model.js"
 import { getLogger } from "./utils/logger.js"
 
+import { specs } from "./config/docConfig.js"
+import swaggerUi from "swagger-ui-express"
+
 import { Server } from "socket.io"
 import __dirname from "./utils.js"
 
@@ -63,7 +66,7 @@ app.use(passport.session())
 app.use('/api/products', productsRouter(socketServer))
 app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', sessionsRouter)
-
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
 
 // Handlebars
 app.engine("handlebars", handlebars.engine())
