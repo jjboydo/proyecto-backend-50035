@@ -1,0 +1,251 @@
+paths:
+  /api/carts/:
+    post:
+      summary: Crear un carrito nuevo
+      description: Crea un nuevo carrito en la base de datos
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: Carrito creado con éxito
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos
+  /api/carts/{cid}:
+    get:
+      summary: Obtener un carrito por su ID
+      description: Devuelve un carrito por su ID con todos los productos que contiene
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a obtener
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: Carrito devuelto con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Carrito no encontrado, generalmente por un carrito inexistente
+    put:
+      summary: Actualizar un carrito
+      description: Actualiza un carrito con nuevos productos o cantidades
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a actualizar
+          schema:
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/updateCart"
+      responses:
+        "200":
+          description: Carrito actualizado con éxito
+        "400":
+          description: Error al buscar un carrito, generalmente por un carrito inexistente
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos o por un ID inválido
+    delete:
+      summary: Eliminar un carrito
+      description: Vacía los productos de un carrito de la base de datos
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a eliminar
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: Carrito eliminado con éxito
+        "400":
+          description: Error al buscar un carrito, generalmente por un carrito inexistente o por un carrito vacío
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos
+  /api/carts/{cid}/product/{pid}:
+    post:
+      summary: Agregar un producto a un carrito
+      description: Agrega un producto a un carrito existente. Solo permitido para usuarios autenticados. El usuario solo puede agregar un producto a su carrito, y no puede agregar un producto que sea suyo.
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a agregar
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: Producto agregado al carrito con éxito
+        "400":
+          description: Error al buscar un carrito o un producto, generalmente por un carrito inexistente o por un producto inexistente
+        "401":
+          description: No autorizado, generalmente debido a un token inválido
+        "403":
+          description: Prohibido, generalmente por falta de permisos
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos
+    delete:
+      summary: Eliminar un producto de un carrito
+      description: Elimina un producto de un carrito existente 
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a eliminar
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: Producto eliminado con éxito
+        "400":
+          description: Error al buscar un carrito o un producto, generalmente por un carrito inexistente o por un producto inexistente
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos
+    put:
+      summary: Actualizar la cantidad de un producto en un carrito
+      description: Actualiza la cantidad de un producto en un carrito existente
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a modificar
+          schema:
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a modificar
+          schema:
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/updateProductFromCart"
+      responses:
+        "200":
+          description: Producto del carrito actualizado con éxito
+        "400":
+          description: Error al buscar un carrito o un producto, generalmente por un carrito inexistente o por un producto inexistente
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos
+  /api/carts/{cid}/purchase:
+    post:
+      summary: Comprar un carrito
+      description: Realiza la compra de un carrito existente. Solo permitido para usuarios autenticados. El usuario solo puede comprar su carrito
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a comprar
+          schema:
+            $type: string
+      responses:
+        "200":
+          description: Compra realizada con éxito. La compra puede no haberse hecho si no hay suficiente stock, o de manera parcial si no hay suficiente stock de todos los productos.
+        "400":
+          description: Error al buscar un carrito, generalmente por un carrito inexistente o por un carrito vacío
+        "401":
+          description: No autorizado, generalmente debido a un token inválido
+        "403":
+          description: Prohibido, generalmente por falta de permisos
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos        
+
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado del carrito
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartProduct"
+      example:
+        _id: 60b3b3b3b3b3b3b3b3b3b3b3
+        products:
+          - _id: 60t345zq345zq345zq345zq1
+            product: 60b3b3b3b3b3b3b3b3b3b1
+            quantity: 2
+          - _id: 60er54g4reu8i4g4reu8i4g4
+            product: 60b3b3b3b3b3b3b3b3b3b2
+            quantity: 1
+    CartProduct:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado del producto en el carrito
+        product: 
+          type: ObjectId
+          description: Id de un producto de la coleccion de productos
+        quantity:
+          type: number
+          description: Cantidad del producto
+      example:
+        _id: 60t345zq345zq345zq345zq1
+        product: 60b3b3b3b3b3b3b3b3b3b1
+        quantity: 2
+  requestBodies:
+    updateCart:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartProduct"
+      example:
+        products:
+          - _id: 60t345zq345zq345zq345zq1
+            product: 60b3b3b3b3b3b3b3b3b3b1
+            quantity: 2
+          - _id: 60er54g4reu8i4g4reu8i4g4
+            product: 60b3b3b3b3b3b3b3b3b3b2
+            quantity: 1
+    updateProductFromCart:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: Cantidad nueva del producto
+      example:
+        quantity: 5

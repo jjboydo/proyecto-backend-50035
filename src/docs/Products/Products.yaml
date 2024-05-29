@@ -110,6 +110,23 @@ paths:
           description: El producto no puede ser eliminado, generalmente porque no existe
         "500":
           description: Error del servidor, generalmente un problema con la base de datos o por un ID inválido
+  /api/products/mockingproducts/:
+    get:
+      summary: Obtener productos mockeados
+      description: Devuelve 100 productos mockeados para pruebas
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Productos mockeados devueltos con éxito, la respuesta incluye un array de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "500":
+          description: Error del servidor, generalmente un problema con la base de datos
 
 components:
   schemas:
