@@ -39,7 +39,7 @@ export default class ProductRepository {
         try {
             await this.#validateCode(product.code)
             this.#validateProduct(product)
-            await this.dao.createProduct({
+            const createdProduct = await this.dao.createProduct({
                 title: product.title,
                 description: product.description,
                 code: product.code,
@@ -51,6 +51,7 @@ export default class ProductRepository {
                 owner: userId
             })
             logger.info("Product added successfully!")
+            return createdProduct
         } catch (error) {
             logger.error("Error adding a product: ")
             throw error

@@ -2,8 +2,8 @@ import { cartService } from "../repositories/index.js"
 
 export const addCart = async (req, res, next) => {
     try {
-        await cartService.addCart()
-        res.status(200).json({ success: "Cart added correctly!" })
+        const createdCart = await cartService.addCart()
+        res.status(200).json({ success: "Cart added correctly!", payload: createdCart._id })
     } catch (error) {
         next(error)
     }
@@ -65,6 +65,16 @@ export const deleteCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         await cartService.deleteCart(cartId)
+        res.status(200).json({ success: `Cart ${cartId} removed successfully!` })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteTestCart = async (req, res, next) => {
+    try {
+        const cartId = req.params.cid
+        await cartService.deleteTestCart(cartId)
         res.status(200).json({ success: `Cart ${cartId} removed successfully!` })
     } catch (error) {
         next(error)

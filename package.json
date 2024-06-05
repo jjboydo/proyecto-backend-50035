@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/app.js --mode production",
-    "dev": "nodemon ./src/app.js --mode development"
+    "dev": "nodemon ./src/app.js --mode development",
+    "supertest": "mocha test/supertest.test.js"
   },
   "keywords": [],
   "author": "",
@@ -34,5 +35,10 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "mocha": "^10.4.0",
+    "supertest": "^7.0.0"
   }
 }

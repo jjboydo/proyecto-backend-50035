@@ -198,6 +198,25 @@ export default class CartRepository {
         }
     }
 
+    async deleteTestCart(cartId) {
+        try {
+            const cart = await this.getCartById(cartId)
+            if (!cart) {
+                throw new CustomError({
+                    name: `Cart Error`,
+                    cause: generateCartErrorInfo(cartId),
+                    message: 'Error searching for a cart',
+                    code: EErrors.INVALID_TYPES_ERROR
+                })
+            }
+            await this.dao.deleteTestCart(cartId)
+            logger.info("Cart deleted successfully!")
+        } catch (error) {
+            logger.error("Error deleting cart")
+            throw error;
+        }
+    }
+
     async purchaseCart(cartId, userEmail) {
         const cart = await this.getCartById(cartId)
         let productsPurchased = []

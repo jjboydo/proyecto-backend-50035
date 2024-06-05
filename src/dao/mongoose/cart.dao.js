@@ -26,4 +26,8 @@ export default class CartDAO {
     async deleteCart(cartId) {
         return await cartsModel.updateOne({ _id: cartId }, { $set: { products: [] } });
     }
+
+    async deleteTestCart(cartId) {
+        return await cartsModel.deleteOne({ _id: cartId });
+    }
 }

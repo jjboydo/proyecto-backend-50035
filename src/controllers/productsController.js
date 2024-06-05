@@ -29,10 +29,10 @@ export const getProductById = async (req, res) => {
 export const updateProductSocket = (socketServer) => async (req, res, next) => {
     try {
         const newProduct = req.body
-        await productService.addProduct(newProduct, req.user.role === 'admin' ? null : req.user.email)
+        const createdProduct = await productService.addProduct(newProduct, req.user.role === 'admin' ? null : req.user.email)
         const products = await productService.getProducts()
         socketServer.emit('product_updated', products)
-        res.status(200).json({ success: "Product added correctly!" })
+        res.status(200).json({ success: "Product added correctly!", payload: createdProduct._id })
     } catch (error) {
         next(error)
     }

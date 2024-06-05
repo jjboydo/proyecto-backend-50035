@@ -7,11 +7,12 @@ import MailingService from "../services/mailing.js"
 
 export const register = async (req, res) => {
     req.logger.info('User registered')
-    res.send({ status: "success", message: "User registered" })
+    res.send({ status: "success", payload: req.user._id })
 }
 
 export const failRegister = async (req, res) => {
     req.logger.error('Failed register')
+    console.log("ERR: ", req.messages)
     res.send({ error: "Failed register" })
 }
 
@@ -158,4 +159,19 @@ export const updatePassword = async (req, res) => {
     await user.save();
 
     res.status(200).send({ status: "success", message: 'Password updated' });
+}
+
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await userService.findById(req.params.uid)
+
+        if (!user) {
+            return res.status(404).send('User not found')
+        }
+
+        await userService.deleteOne({ _id: user._id });
+        res.status(200).send("User deleted")
+    } catch (error) {
+        res.status(500).send('Error deleting user')
+    }
 }
