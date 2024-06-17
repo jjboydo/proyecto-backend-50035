@@ -33,7 +33,8 @@ const initializePassport = () => {
                     age,
                     password: createHash(password),
                     role,
-                    cart: cart._id
+                    cart: cart._id,
+                    documents: []
                 }
                 let result = await userService.create(newUser)
                 return done(null, result)
@@ -51,7 +52,8 @@ const initializePassport = () => {
                     last_name: "Admin",
                     email: config.adminName,
                     age: 1,
-                    role: "admin"
+                    role: "admin",
+                    last_connection: Date.now()
                 }
                 return done(null, adminUser);
             }
@@ -62,6 +64,8 @@ const initializePassport = () => {
             }
             if (!isValidPassword(user, password)) return done(null, false, { messages: "Incorrect password" })
             delete user.password
+            user.last_connection = Date.now()
+            await user.save()
             return done(null, user)
         } catch (error) {
             return done(error)

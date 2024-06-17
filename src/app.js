@@ -12,6 +12,7 @@ import cartsRouter from "./routes/carts.router.js"
 import productsRouter from "./routes/products.router.js"
 import sessionsRouter from "./routes/sessions.router.js"
 import viewsRouter from "./routes/views.router.js"
+import usersRouter from "./routes/users.router.js"
 
 import errorHandler from "./middlewares/errors/index.js"
 import { addLogger } from "./utils/logger.js"
@@ -67,6 +68,7 @@ app.use('/api/products', productsRouter(socketServer))
 app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
+app.use('/api/users', usersRouter)
 
 // Handlebars
 app.engine("handlebars", handlebars.engine())

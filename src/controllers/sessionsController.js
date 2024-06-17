@@ -72,22 +72,6 @@ export const current = (req, res) => {
     res.send(user);
 }
 
-export const changeRole = async (req, res) => {
-    try {
-        const user = await userService.findById(req.params.uid)
-
-        if (!user) {
-            return res.status(404).send('User not found')
-        }
-
-        user.role = user.role === 'user' ? 'user_premium' : 'user'
-        await user.save()
-        res.send(user)
-    } catch (error) {
-        res.status(500).send('Error changing role')
-    }
-}
-
 export const recoverPassword = async (req, res) => {
     const { email } = req.body
     const user = await userService.findOne({ email: email })
