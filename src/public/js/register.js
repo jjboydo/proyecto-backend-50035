@@ -7,7 +7,7 @@ registerForm.addEventListener('submit', async (e) => {
     let email = document.getElementById('email').value
     let age = document.getElementById('age').value
     let password = document.getElementById('password').value
-    fetch('http://localhost:8080/api/sessions/register', {
+    fetch(`${serverUrl}/api/sessions/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -48,6 +48,12 @@ app.use(cookieParser())
 
 const socketServer = new Server(httpServer)
 
+// Middleware para pasar config al contexto de las vistas
+app.use((req, res, next) => {
+    res.locals.serverUrl = config.serverUrl;
+    next();
+});
+
 // Sessions
 
 app.use(session({
@@ -92,6 +98,32 @@ app.set("views", __dirname + "/views")
 app.set("view engine", "handlebars")
 app.use(express.static(__dirname + "/public"))
 app.use("/", viewsRouter)
+
+// Middleware para manejar errores específicos (400, 401, 403)
+app.use((err, req, res, next) => {
+    if (err.status === 400 || err.status === 401 || err.status === 403) {
+        res.status(err.status);
+        res.format({
+            'text/html': () => {
+                res.render('error', {
+                    errorCode: err.status,
+                    errorMessage: err.message || (err.status === 400 ? 'Bad Request' : err.status === 401 ? 'Unauthorized' : 'Forbidden')
+                });
+            },
+            'application/json': () => {
+                res.json({
+                    status: 'error',
+                    error: err.message || (err.status === 400 ? 'Bad Request' : err.status === 401 ? 'Unauthorized' : 'Forbidden')
+                });
+            },
+            'default': () => {
+                res.status(406).send('Not Acceptable');
+            }
+        });
+    } else {
+        next(err);
+    }
+});
 
 // Prueba de logs
 

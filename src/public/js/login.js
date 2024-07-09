@@ -4,7 +4,7 @@ loginForm.addEventListener('submit', async (e) => {
     e.preventDefault()
     let email = document.getElementById('email').value
     let password = document.getElementById('password').value
-    fetch('http://localhost:8080/api/sessions/login', {
+    fetch(`${serverUrl}/api/sessions/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -6,7 +6,7 @@ buttons.forEach(btn => {
     btn.addEventListener('click', function () {
         productId = this.dataset.productid
         cartId = this.dataset.cartid
-        fetch('http://localhost:8080/api/carts/' + cartId + '/product/' + productId, {
+        fetch(`${serverUrl}/api/carts/` + cartId + '/product/' + productId, {
             method: 'DELETE'
         })
             .then(response => {
@@ -37,7 +37,7 @@ displayConfirmPurchaseAlert = () => {
         confirmButtonColor: '#572727',
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch('http://localhost:8080/api/carts/' + cartId + '/purchase', {
+            fetch(`${serverUrl}/api/carts/` + cartId + '/purchase', {
                 method: 'POST'
             })
                 .then(response => response.json()

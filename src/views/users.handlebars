@@ -55,7 +55,7 @@
         changeRoleButtons.forEach(button => {
             button.addEventListener('click', async (e) => {
                 const userId = e.target.getAttribute('data-userid');
-                const response = await fetch(`http://localhost:8080/api/users/premium/${userId}`, {
+                const response = await fetch(`${serverUrl}/api/users/premium/${userId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -73,7 +73,7 @@
 
         deleteUserButton.addEventListener('click', async (e) => {
             e.preventDefault();
-            const response = await fetch(`http://localhost:8080/api/sessions/deleteuser/${userId}`, {
+            const response = await fetch(`${serverUrl}/api/sessions/deleteuser/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

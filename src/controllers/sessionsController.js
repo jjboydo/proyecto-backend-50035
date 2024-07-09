@@ -96,7 +96,7 @@ export const recoverPassword = async (req, res) => {
         to: user.email,
         subject: "Recuperar contraseña",
         html: `<p>Haga click en el siguiente enlace para recuperar la contraseña: </p>
-        <a href="http://localhost:${config.port}/api/sessions/reset-password/${token}">Recuperar contraseña</a>`
+        <a href="${config.frontendUrl}/api/sessions/reset-password/${token}">Recuperar contraseña</a>`
     }
 
     await mailer.sendMail(mailOptions)

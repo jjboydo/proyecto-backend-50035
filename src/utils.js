@@ -68,13 +68,6 @@ export const checkOwnership = () => {
     }
 }
 
-export const handleError = (response) => {
-    if (response.status === 401 || response.status === 403) {
-        window.location.href = `/error?status=${response.status}&message=${response.error}`;
-    }
-    return response;
-};
-
 export const checkProductOwner = () => {
     return async (req, res, next) => {
         const userEmail = req.user.email

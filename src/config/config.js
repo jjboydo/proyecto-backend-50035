@@ -26,5 +26,6 @@ export default {
     email: process.env.MAIL_USER,
     emailPassword: process.env.MAIL_PASSWORD,
     emailService: process.env.MAIL_SERVICE,
-    emailHost: process.env.MAIL_HOST
+    emailHost: process.env.MAIL_HOST,
+    serverUrl: process.env.SERVER_URL
 }

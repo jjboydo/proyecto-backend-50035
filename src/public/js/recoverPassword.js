@@ -1,5 +1,3 @@
-import { handleError } from "../../utils"
-
 let recoverPasswordForm = document.getElementById('recoverPasswordForm')
 
 recoverPasswordForm.addEventListener('submit', (e) => {
@@ -9,16 +7,14 @@ recoverPasswordForm.addEventListener('submit', (e) => {
     button.setAttribute('disabled', true)
     button.innerText = 'Enviando...'
 
-    fetch('http://localhost:8080/api/sessions/reset-password', {
+    fetch(`${serverUrl}/api/sessions/reset-password`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email })
     })
-        .then(response => {
-            return handleError(response).json();
-        })
+        .then(response => response.json())
         .then(data => {
             button.removeAttribute('disabled')
             if (data.status === "error") {

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).then((result) => {
                 if (result.isConfirmed) {
 
-                    fetch('http://localhost:8080/api/carts/' + cartId + '/product/' + productId, {
+                    fetch(`${serverUrl}/api/carts/` + cartId + '/product/' + productId, {
                         method: 'POST'
                     })
                         .then(response => {

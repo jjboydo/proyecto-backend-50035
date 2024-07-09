@@ -71,8 +71,8 @@ export default class ProductRepository {
             stat ? statusObject = { status: stat } : statusObject = {}
             let filter = { ...categoryObject, ...statusObject }
             let result = sort ? await this.dao.getProducts(filter, { limit: limit, page: page, lean: true, sort: { price: sort } }) : await this.dao.getProducts(filter, { limit: limit, page: page, lean: true })
-            result.prevLink = result.hasPrevPage ? `http://localhost:8080/products?page=${result.prevPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
-            result.nextLink = result.hasNextPage ? `http://localhost:8080/products?page=${result.nextPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
+            result.prevLink = result.hasPrevPage ? `${config.serverUrl}/products?page=${result.prevPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
+            result.nextLink = result.hasNextPage ? `${config.serverUrl}/products?page=${result.nextPage}&limit=${limit}${sort ? `&sort=${sort}` : ""}${category ? `&category=${category}` : ""}${stat ? `&status=${stat}` : ""}` : ''
             const productsResponse = {
                 status: "success",
                 payload: result.docs,

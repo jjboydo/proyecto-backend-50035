@@ -1,8 +1,9 @@
 import * as chai from "chai";
 import supertest from "supertest";
+import config from "../src/config/config";
 
 const expect = chai.expect;
-const requester = supertest("http://localhost:8080");
+const requester = supertest(`${config.serverUrl}`);
 
 // Test de sessions
 

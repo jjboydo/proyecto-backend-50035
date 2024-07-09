@@ -1,5 +1,3 @@
-import { handleError } from "../../utils"
-
 let resetPasswordForm = document.getElementById('resetPasswordForm')
 
 resetPasswordForm.addEventListener('submit', (e) => {
@@ -7,16 +5,14 @@ resetPasswordForm.addEventListener('submit', (e) => {
     const token = resetPasswordForm.dataset.token
     const password = document.getElementById('password').value
 
-    fetch(`http://localhost:8080/api/sessions/update-password/${token}`, {
+    fetch(`${serverUrl}/api/sessions/update-password/${token}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ password })
     })
-        .then(response => {
-            return handleError(response).json();
-        })
+        .then(response => response.json())
         .then(data => {
             console.log("DATA:", data)
             if (data.status === 'error') {
