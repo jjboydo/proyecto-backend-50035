@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                         .catch(function (error) {
                             console.error(error)
-                            Swal.fire('Error al agregar el producto al carrito!', '', 'error')
+                            Swal.fire('Error al agregar el producto al carrito!', 'Es posible que estes agregando un producto que es de tu propiedad', 'error')
                         })
                 }
             })

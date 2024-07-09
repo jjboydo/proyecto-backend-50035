@@ -81,7 +81,7 @@ export const deleteTestCart = async (req, res, next) => {
     }
 }
 
-export const purchaseCart = async (req, res) => {
+export const purchaseCart = async (req, res, next) => {
     try {
         const cartId = req.params.cid
         const userEmail = req.user.email

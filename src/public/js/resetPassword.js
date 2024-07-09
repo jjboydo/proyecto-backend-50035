@@ -14,7 +14,6 @@ resetPasswordForm.addEventListener('submit', (e) => {
     })
         .then(response => response.json())
         .then(data => {
-            console.log("DATA:", data)
             if (data.status === 'error') {
                 Swal.fire({
                     title: 'Error',

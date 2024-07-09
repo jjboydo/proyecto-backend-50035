@@ -117,7 +117,6 @@ export default class ProductRepository {
         try {
             const product = await this.getProductsById(productId)
             const ownerFromProduct = await userService.findOne({ email: product.owner })
-            console.log("OWNER USER", ownerFromProduct)
             if (!product) {
                 throw new CustomError({
                     name: `Product Error`,
@@ -127,7 +126,7 @@ export default class ProductRepository {
                 })
             }
 
-            if (ownerFromProduct.role === 'user_premium') {
+            if (ownerFromProduct?.role === 'user_premium') {
                 const mailer = new MailingService()
 
                 const mailOptions = {

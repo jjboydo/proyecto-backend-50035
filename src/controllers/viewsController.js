@@ -1,8 +1,7 @@
-import { get } from "mongoose"
 import config from "../config/config.js"
-import { cartService, productService } from "../repositories/index.js"
 import UserDTO from "../dao/DTOs/user.dto.js"
 import userService from "../dao/models/user.model.js"
+import { cartService, productService } from "../repositories/index.js"
 export const getHome = async (req, res) => {
     if (req.cookies.cookieToken) {
         return res.redirect("/products")

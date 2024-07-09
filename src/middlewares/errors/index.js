@@ -13,6 +13,11 @@ export default (error, req, res, next) => {
                 .status(412)
                 .json({ status: "error", error: error.name, message: error.message, cause: error.cause })
             break
+        case EErrors.NOT_FOUND:
+            res
+                .status(404)
+                .json({ status: "error", error: error.name, message: error.message, cause: error.cause })
+            break
         default:
             res.status(500).json({ status: "error", error: "Error no contemplado" })
             break

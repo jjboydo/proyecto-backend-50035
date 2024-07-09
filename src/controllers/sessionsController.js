@@ -1,8 +1,8 @@
 import config from "../config/config.js"
 import UserDTO from "../dao/DTOs/user.dto.js"
-import userService from "../dao/models/user.model.js"
 import { createHash, generateToken, isValidPassword, validateToken } from "../utils.js"
 import MailingService from "../services/mailing.js"
+import { userService } from "../repositories/index.js"
 
 
 export const register = async (req, res) => {
@@ -12,7 +12,6 @@ export const register = async (req, res) => {
 
 export const failRegister = async (req, res) => {
     req.logger.error('Failed register')
-    console.log("ERR: ", req.messages)
     res.send({ error: "Failed register" })
 }
 
@@ -73,7 +72,7 @@ export const current = (req, res) => {
 
 export const recoverPassword = async (req, res) => {
     const { email } = req.body
-    const user = await userService.findOne({ email: email })
+    const user = await userService.getUserByEmail(email)
     if (!user) {
         return res.status(404).send({ status: "error", message: 'User not found' })
     }
@@ -125,7 +124,7 @@ export const updatePassword = async (req, res) => {
     const token = req.params.token
     const decoded = validateToken(token)
 
-    const user = await userService.findOne({ email: decoded.email });
+    const user = await userService.getUserByEmail(decoded.email)
 
     if (!user) {
         return res.status(404).send('User not found');
@@ -146,13 +145,13 @@ export const updatePassword = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        const user = await userService.findById(req.params.uid)
+        const user = await userService.getUserById(req.params.id)
 
         if (!user) {
             return res.status(404).send('User not found')
         }
 
-        await userService.deleteOne({ _id: user._id });
+        await userService.deleteUserById(user._id)
         res.status(200).send("User deleted")
     } catch (error) {
         res.status(500).send('Error deleting user')

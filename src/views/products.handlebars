@@ -29,6 +29,8 @@
     style=" display: flex; flex-wrap:wrap; gap: 50px; justify-content: center; width: 80%; margin: auto;">
     {{#each products.payload}}
     <div class="card">
+        <img src="{{this.thumbnails.[0]}}" alt="Imagen del producto"
+            style="width: 100%; object-fit: cover; border-radius: 12px; margin-top: 10px">
         <h3><strong>Nombre del producto:</strong> {{this.title}}</h3>
         <p><strong>Descripción:</strong> {{this.description}}</p>
         <p><strong>Precio:</strong> ${{this.price}}</p>
@@ -53,12 +55,12 @@
 </div>
 <div id="pagination" style="display: flex; justify-content:center; margin-top: 20px; align-items: center;">
     {{#if products.hasPrevPage}}
-    <a style="padding-right: 20px;" href={{products.prevLink}}>
+    <a style="padding-right: 20px; color:#572727;" href={{products.prevLink}}>
         << Anterior</a>
             {{/if}}
             <p style="font-size: 20px; font-weight: bold;">Página {{products.page}}</p>
             {{#if products.hasNextPage}}
-            <a style="padding-left: 20px;" href={{products.nextLink}}>Siguiente >></a>
+            <a style="padding-left: 20px; color:#572727;" href={{products.nextLink}}>Siguiente >></a>
             {{/if}}
 </div>
 
