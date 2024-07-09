@@ -1,5 +1,8 @@
+import { get } from "mongoose"
 import config from "../config/config.js"
 import { cartService, productService } from "../repositories/index.js"
+import UserDTO from "../dao/DTOs/user.dto.js"
+import userService from "../dao/models/user.model.js"
 export const getHome = async (req, res) => {
     if (req.cookies.cookieToken) {
         return res.redirect("/products")
@@ -37,7 +40,13 @@ export const getProducts = async (req, res) => {
         cart = req.user.cart
         cartId = req.user.cartId
     }
-    req.user.role === "admin" ? admin = "Admin" : admin = "User"
+    if (req.user.role === "admin") {
+        admin = "Admin"
+    } else if (req.user.role === "user") {
+        admin = "User"
+    } else {
+        admin = "Premium"
+    }
     res.render("products", {
         style: "home.css",
         products,
@@ -77,13 +86,13 @@ export const getRegister = async (req, res) => {
 }
 
 export const getProfile = async (req, res) => {
-    if (!req.cookies.cookieToken) {
+    if (!req.cookies.cookieToken || !req.user) {
         return res.redirect("/login")
     }
 
-    const { first_name, last_name, email, age } = req.user
+    const { first_name, last_name, email, age, role } = req.user
     res.render("profile", {
-        first_name, last_name, email, age,
+        first_name, last_name, email, age, role,
         style: "home.css"
     })
 }
@@ -104,5 +113,24 @@ export const getResetPassword = async (req, res) => {
 export const getRecoverPassword = async (req, res) => {
     res.render("recoverPassword", {
         style: "home.css"
+    })
+}
+
+export const getUsers = async (req, res) => {
+    const users = await userService.find()
+    const usersDTO = users.map(user => new UserDTO(user));
+    res.render("users", {
+        users: usersDTO,
+        style: "home.css"
+    })
+}
+
+export const getError = async (req, res) => {
+    const status = req.query.status
+    const message = req.query.message
+    res.render("error", {
+        style: "home.css",
+        status,
+        message
     })
 }

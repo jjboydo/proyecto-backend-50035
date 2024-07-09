@@ -1,5 +1,5 @@
 import express from "express"
-import { changeRole, uploadDocument } from "../controllers/usersController.js"
+import { changeRole, deleteInactiveUsers, getUsers, uploadDocument } from "../controllers/usersController.js"
 import applyPolicy from "../middlewares/auth.middleware.js"
 import { passportCall } from "../utils.js"
 import { uploader } from "../utils/multer.js"
@@ -8,7 +8,7 @@ const router = express.Router()
 
 // ENDPOINTS
 
-router.put('/premium/:uid', passportCall('jwt'), applyPolicy(["USER", "USER_PREMIUM"]), changeRole)
+router.put('/premium/:uid', passportCall('jwt'), applyPolicy(["USER", "USER_PREMIUM", "ADMIN"]), changeRole)
 
 router.post('/:uid/documents', passportCall('jwt'), applyPolicy(["USER", "USER_PREMIUM"]), uploader.fields([
     { name: 'profileImage', },
@@ -18,5 +18,9 @@ router.post('/:uid/documents', passportCall('jwt'), applyPolicy(["USER", "USER_P
     { name: 'proofOfAddress' },
     { name: 'proofOfAccountStatus' },
 ]), uploadDocument)
+
+router.get('/', passportCall('jwt'), getUsers)
+
+router.delete('/', passportCall('jwt'), applyPolicy(["ADMIN"]), deleteInactiveUsers)
 
 export default router

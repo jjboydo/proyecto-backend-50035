@@ -1,6 +1,7 @@
 import { productService } from "../repositories/index.js"
 import { generateProduct } from "../utils.js"
 
+
 export const getProducts = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit)

@@ -1,23 +1,32 @@
 {{#if first_name}}
-<div style="color: darkred; display: flex; align-items: center; justify-content: space-around;">
+<div style="color: #572727; display: flex; align-items: center; justify-content: space-around;">
     <div style="display: flex; align-items: center; gap: 20px;">
         <p style="font-size: 20px; font-weight: bold;">Bienvenido {{first_name}} {{last_name}}!</p>
         <p style="font-size: 14px; color: black;">Rol: {{admin}}</p>
     </div>
     <div style="display: flex; gap: 20px; align-items: center;">
-        <a id="view-cart" class="button" style="padding-top: 10px; background-color: rgb(87, 39, 39)"
-            href="/carts/{{cartId}}">Ver
+        {{#if (eq admin "Admin") }}
+        <a id="view-users" class="button" style="padding-top: 10px;" href="/users">Ver
+            Usuarios</a>
+        {{/if}}
+        {{#if (eq admin "User") }}
+        <a id="view-cart" class="button" style="padding-top: 10px;" href="/carts/{{cartId}}">Ver
             Carrito</a>
-        <a id="view-profile" class="button" style="padding-top: 10px; background-color: rgb(87, 39, 39)"
-            href="/profile">Ver Perfil</a>
+        {{/if}}
+        {{#if (eq admin "Premium") }}
+        <a id="view-cart" class="button" style="padding-top: 10px;" href="/carts/{{cartId}}">Ver
+            Carrito</a>
+        {{/if}}
+        <a id="view-profile" class="button" style="padding-top: 10px;" href="/profile">Ver Perfil</a>
         <form action="/logout" method="get">
             <button type="submit" id="logout" class="button" style="height: 30px;">Logout</button>
         </form>
     </div>
 </div>
 {{/if}}
-<h1 style="color: darkred; display: flex; justify-content: center;">Lista de productos</h1>
-<div id="products-list" style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
+<h1 style="color: #572727; display: flex; justify-content: center;">Lista de productos</h1>
+<div id="products-list"
+    style=" display: flex; flex-wrap:wrap; gap: 50px; justify-content: center; width: 80%; margin: auto;">
     {{#each products.payload}}
     <div class="card">
         <h3><strong>Nombre del producto:</strong> {{this.title}}</h3>
@@ -25,26 +34,33 @@
         <p><strong>Precio:</strong> ${{this.price}}</p>
         <p><strong>Código:</strong> {{this.code}}</p>
         <p><strong>Categoría:</strong> {{this.category}}</p>
-        <button id="add-to-cart" class="button" data-productid="{{this._id}}">Agregar al carrito</button>
+        <p><strong>Stock: </strong> {{this.stock}} unidades</p>
+        {{#if (eq this.stock 0) }}
+        <button class="button" disabled style="background-color: red; color: white; cursor:not-allowed">Sin
+            stock</button>
+        {{else}}
+        {{#if (eq ../admin "User") }}
+        <button id="add-to-cart" class="button" data-productid="{{this._id}}" data-cartid="{{../cartId}}">Agregar al
+            carrito</button>
+        {{/if}}
+        {{#if (eq ../admin "Premium") }}
+        <button id="add-to-cart" class="button" data-productid="{{this._id}}" data-cartid="{{../cartId}}">Agregar al
+            carrito</button>
+        {{/if}}
+        {{/if}}
     </div>
     {{/each}}
-</div>
-<div id="cart-modal" class="modal"
-    style="display: flex; flex-direction: column; gap: 10px; align-items: center; display:none">
-    <h4>Desea agregar el producto al carrito?</h4>
-    <form id="add-to-cart-form" style="display: flex; flex-direction: column; gap: 40px;">
-        <button type="submit" id="add-to-cart-confirm" class="button" data-cartid="{{cartId}}">Confirmar</button>
-    </form>
 </div>
 <div id="pagination" style="display: flex; justify-content:center; margin-top: 20px; align-items: center;">
     {{#if products.hasPrevPage}}
     <a style="padding-right: 20px;" href={{products.prevLink}}>
         << Anterior</a>
             {{/if}}
-            <p style="font-size: 20px; font-weight: bold;">{{products.page}}</p>
+            <p style="font-size: 20px; font-weight: bold;">Página {{products.page}}</p>
             {{#if products.hasNextPage}}
             <a style="padding-left: 20px;" href={{products.nextLink}}>Siguiente >></a>
             {{/if}}
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/products.js"></script>

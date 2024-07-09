@@ -1,0 +1,86 @@
+<h1 style="width: 75%; margin: auto; padding: 30px; color: darkred;">Lista de usuarios</h1>
+<a id="back-to-products" class="button"
+    style="margin-left: 12.5%; padding-top: 10px; background-color: rgb(255, 212, 212); color: black;" href="/products">
+    Volver a Productos</a>
+<div id="message-container"
+    style="width: 75%; margin: auto; padding-top: 20px; color: red; display: none; font-weight: bold;"></div>
+<table class="products-table" id="users-table">
+    <thead>
+        <tr>
+            <th style="font-size: large; color: darkred;">Nombre</th>
+            <th style="font-size: large; color: darkred;">Email</th>
+            <th style="font-size: large; color: darkred;">Tipo</th>
+            <th style="font-size: large; color: darkred;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each users}}
+        <tr>
+            <td>{{this.last_name}},
+                {{this.first_name}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.role}}</td>
+            <td>
+                <button class="changeRole button" data-userid="{{this.id}}">Cambiar rol</button>
+                <button class="deleteButton button" data-userid="{{this.id}}">Eliminar</button>
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+<div id="delete-modal" class="modal"
+    style="display: flex; flex-direction: column; gap: 10px; align-items: center; display:none">
+    <h4>Desea eliminar el usuario?</h4>
+    <form id="add-to-cart-form" style="display: flex; flex-direction: column; gap: 40px;">
+        <button id="deleteUser" class="button">Eliminar</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const changeRoleButtons = document.querySelectorAll('.changeRole');
+        const deleteButtons = document.querySelectorAll('.deleteButton');
+        const deleteUserButton = document.getElementById('deleteUser');
+        const messageContainer = document.getElementById('message-container');
+        let userId;
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                document.getElementById("users-table").style.display = "none";
+                document.getElementById("delete-modal").style.display = "flex";
+                userId = e.target.getAttribute('data-userid');
+            });
+        });
+
+        changeRoleButtons.forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const userId = e.target.getAttribute('data-userid');
+                const response = await fetch(`http://localhost:8080/api/users/premium/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    messageContainer.style.display = 'block';
+                    messageContainer.innerText = 'Error al cambiar el rol del usuario. Falta documentación por parte del usuario.';
+                }
+            });
+        });
+
+        deleteUserButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const response = await fetch(`http://localhost:8080/api/sessions/deleteuser/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            location.reload();
+            const data = await response.json();
+        });
+    });
+</script>

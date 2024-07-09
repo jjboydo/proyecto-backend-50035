@@ -1,13 +1,15 @@
-<form method="POST" action="/api/sessions/login"
-    style="display: flex; flex-direction: column; width: 300px; gap: 10px;">
-    <label for="email">Email</label>
-    <input type="email" name="email" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" required>
-    <button type="submit" class="button">Login</button>
-    <a href="/api/sessions/github"
-        style="background-color: rgb(255, 159, 159); text-align: center; border-radius: 6px; padding: 3px;">Entrar
-        con
-        GitHub</a>
-    <a href="http://localhost:8080/register">Register</a>
-</form>
+<div class="form-container">
+    <h2 style="color: #572727; text-align: center;">Iniciar sesión</h2>
+    <form id="form-login" class="login-form">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit" onsubmit="window.location.href = '/';" class="button">Login</button>
+        <a href="/api/sessions/github" class="github-button">Entrar con GitHub</a>
+    </form>
+    <p style="color: darkred; text-align: center;">¿No tienes una cuenta? <a style="color: #572727;"
+            href="/register">Regístrate</a></p>
+</div>
+
+<script src="/js/login.js"></script>

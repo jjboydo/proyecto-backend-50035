@@ -1,35 +1,36 @@
-let buttons = document.querySelectorAll('#add-to-cart')
-let productId;
+document.addEventListener('DOMContentLoaded', () => {
+    let buttons = document.querySelectorAll('#add-to-cart')
 
-buttons.forEach(btn => {
-    btn.addEventListener('click', function () {
-        document.getElementById("products-list").style.display = "none"
-        document.getElementById("pagination").style.display = "none"
-        document.getElementById("cart-modal").style.display = "flex"
-        productId = this.dataset.productid
-    })
-})
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const productId = btn.getAttribute('data-productid');
+            const cartId = btn.getAttribute('data-cartid');
+            Swal.fire({
+                title: '¿Estás seguro de agregar este producto al carrito?',
+                showCancelButton: true,
+                confirmButtonText: `Confirmar`,
+                cancelButtonText: `Cancelar`,
+                confirmButtonColor: '#572727',
+            }).then((result) => {
+                if (result.isConfirmed) {
 
-document.getElementById('add-to-cart-confirm').addEventListener('click', () => {
-    document.getElementById("products-list").style.display = "flex"
-    document.getElementById("pagination").style.display = "flex"
-    document.getElementById("cart-modal").style.display = "none"
-})
-
-document.getElementById('add-to-cart-form').addEventListener('submit', (e) => {
-    e.preventDefault()
-
-    let cartId = document.getElementById("add-to-cart-confirm").dataset.cartid
-
-    fetch('http://localhost:8080/api/carts/' + cartId + '/product/' + productId, {
-        method: 'POST'
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al agregar el producto: ' + response.status)
-            }
+                    fetch('http://localhost:8080/api/carts/' + cartId + '/product/' + productId, {
+                        method: 'POST'
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error al agregar el producto: ' + response.status)
+                            }
+                        })
+                        .then(() => {
+                            Swal.fire('Producto agregado al carrito!', '', 'success');
+                        })
+                        .catch(function (error) {
+                            console.error(error)
+                            Swal.fire('Error al agregar el producto al carrito!', '', 'error')
+                        })
+                }
+            })
         })
-        .catch(function (error) {
-            console.error(error)
-        })
+    })
 });

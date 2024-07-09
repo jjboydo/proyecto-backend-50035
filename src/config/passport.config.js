@@ -101,7 +101,9 @@ const initializePassport = () => {
                     age: 20,
                     email: profile._json.email,
                     password: '',
-                    cart: cart._id
+                    role,
+                    cart: cart._id,
+                    documents: []
                 }
                 let result = await userService.create(newUser);
                 done(null, result);

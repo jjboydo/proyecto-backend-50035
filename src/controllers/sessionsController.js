@@ -45,7 +45,6 @@ export const login = async (req, res) => {
     }
     const token = generateToken(tokenUser)
     res.cookie(config.cookieToken, token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
-    // res.redirect("/products")
 }
 
 export const failLogin = async (req, res) => {
@@ -59,12 +58,12 @@ export const githubCallback = async (req, res) => {
         last_name: req.user.last_name,
         email: req.user.email,
         age: req.user.age,
+        cartId: req.user.cart._id,
         role: "user"
     }
     const token = generateToken(tokenUser)
     req.logger.info(token)
     res.cookie(config.cookieToken, token, { maxAge: 60 * 60 * 1000, httpOnly: true }).send({ message: "Logged in!" })
-    // res.redirect("/products")
 }
 
 export const current = (req, res) => {
@@ -76,7 +75,7 @@ export const recoverPassword = async (req, res) => {
     const { email } = req.body
     const user = await userService.findOne({ email: email })
     if (!user) {
-        return res.status(404).send('User not found')
+        return res.status(404).send({ status: "error", message: 'User not found' })
     }
 
     const tokenUser = {

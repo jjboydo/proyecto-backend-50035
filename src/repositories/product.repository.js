@@ -1,7 +1,10 @@
 import CustomError from "../services/errors/CustomError.js";
 import EErrors from "../services/errors/enums.js";
 import { generateProductCodeErrorInfo, generateProductErrorInfo, generateProductExistsErrorInfo } from "../services/errors/info.js";
+import MailingService from "../services/mailing.js";
 import { getLogger } from "../utils/logger.js";
+import userService from "../dao/models/user.model.js"
+import config from "../config/config.js";
 
 const logger = getLogger()
 
@@ -113,6 +116,8 @@ export default class ProductRepository {
     async deleteProduct(productId) {
         try {
             const product = await this.getProductsById(productId)
+            const ownerFromProduct = await userService.findOne({ email: product.owner })
+            console.log("OWNER USER", ownerFromProduct)
             if (!product) {
                 throw new CustomError({
                     name: `Product Error`,
@@ -121,10 +126,24 @@ export default class ProductRepository {
                     code: EErrors.MISSING_DATA
                 })
             }
+
+            if (ownerFromProduct.role === 'user_premium') {
+                const mailer = new MailingService()
+
+                const mailOptions = {
+                    from: config.email,
+                    to: ownerFromProduct.email,
+                    subject: 'Producto eliminado del Sistema',
+                    html: `<h2>El producto "<strong>${product.title}</strong>" ha sido eliminado del sistema. <br/> Si no has sido tú, por favor, ponte en contacto con nosotros.</h2>`
+                }
+
+                mailer.sendMail(mailOptions)
+            }
+
             await this.dao.deleteProduct(productId)
             logger.info("Product deleted successfully!")
         } catch (error) {
-            logger.error("Error deleting a product: ")
+            console.log("ERROR", error)
             throw error
         }
     }

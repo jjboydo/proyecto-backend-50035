@@ -89,9 +89,9 @@ export const purchaseCart = async (req, res) => {
         const { productsPurchased, canceledProducts, total } = await cartService.purchaseCart(cartId, userEmail)
 
         if (productsPurchased.length === 0) {
-            res.status(200).json({ success: `No products were purchased due to lack of stock` });
+            res.status(409).json({ success: `No products were purchased due to lack of stock` });
         } else if (canceledProducts.length > 0) {
-            res.status(200).json({ success: `Purchase completed partially`, payload: canceledProducts })
+            res.status(206).json({ success: `Purchase completed partially`, payload: canceledProducts })
         } else {
             res.status(200).json({ success: `Purchase completed successfully` })
         }

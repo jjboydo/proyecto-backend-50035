@@ -1,5 +1,5 @@
 import express from "express"
-import { getCarts, getChat, getHome, getLogin, getLogout, getProducts, getProfile, getRealTimeProducts, getRecoverPassword, getRegister, getResetPassword } from "../controllers/viewsController.js"
+import { getCarts, getChat, getError, getHome, getLogin, getLogout, getProducts, getProfile, getRealTimeProducts, getRecoverPassword, getRegister, getResetPassword, getUsers } from "../controllers/viewsController.js"
 import applyPolicy from "../middlewares/auth.middleware.js"
 import { passportCall, verifyUserCart } from "../utils.js"
 
@@ -30,5 +30,9 @@ router.get('/logout', getLogout)
 router.get('/reset-password/:token', getResetPassword)
 
 router.get('/recover-password', getRecoverPassword)
+
+router.get('/users', passportCall('jwt'), applyPolicy(["ADMIN"]), getUsers)
+
+router.get('/error', getError)
 
 export default router

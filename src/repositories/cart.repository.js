@@ -237,7 +237,10 @@ export default class CartRepository {
             let product = await productService.getProductsById(productInCart.product._id.toString())
 
             if (product.stock < productInCart.quantity) {
-                canceledProducts.push(product._id.toString())
+                canceledProducts.push({
+                    id: product._id.toString(),
+                    name: product.title,
+                })
             } else {
                 total += product.price * productInCart.quantity
                 product.stock -= productInCart.quantity
@@ -247,21 +250,21 @@ export default class CartRepository {
         }
 
         cart.products = cart.products.filter(productCart => {
-            return canceledProducts.includes(productCart.product._id.toString())
+            return canceledProducts.some(canceledProduct => canceledProduct.id === productCart.product._id.toString())
         })
 
-        await this.updateCart(cartId, cart.products)
 
         if (productsPurchased.length > 0) {
+            await this.updateCart(cartId, cart.products)
             const newTicket = {
                 amount: total,
                 purchaser: userEmail
             }
 
             await ticketService.createTicket(newTicket)
+            logger.info(`Cart ${cartId} purchased successfully!`)
         }
 
-        logger.info(`Cart ${cartId} purchased successfully!`)
 
         return { productsPurchased, canceledProducts, total }
     }

@@ -1,18 +1,40 @@
 {{#if cart}}
 <h1 style="color: darkred; display: flex; justify-content: center;">Carrito N°{{cart._id}}</h1>
+<a id="back-to-products" class="button"
+    style="margin-left: 10%; padding-top: 10px; background-color: rgb(255, 212, 212); color: black;" href="/products">
+    Volver a Productos</a>
 {{#if cart.products.length}}
-<div style=" display: flex; flex-wrap:wrap; gap: 20px; justify-content: center;">
-    {{#each cart.products}}
-    <div class="card">
-        <h3><strong>Nombre del producto:</strong> {{this.product.title}}</h3>
-        <p><strong>Código:</strong> {{this.product.code}}</p>
-        <p><strong>Cantidad:</strong> {{this.quantity}}</p>
-        <p><strong>Precio:</strong> ${{this.product.price}}</p>
-    </div>
-    {{/each}}
-</div>
-<form action="http://localhost:8080/api/carts/{{cart._id}}/purchase"
-    style="padding-top: 50px;display: flex; gap: 40px; justify-content: center;" method="post">
+<table class="products-table">
+    <thead>
+        <tr>
+            <th>Nombre del producto</th>
+            <th>Código</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each cart.products}}
+        <tr>
+            <td>{{this.product.title}}</td>
+            <td>{{this.product.code}}</td>
+            <td>$ {{this.product.price}}</td>
+            <td>{{this.quantity}}</td>
+            <td>$ {{multiply this.product.price this.quantity}}</td>
+            <td><button id="remove-from-cart" class="button" data-productid="{{this.product._id}}"
+                    data-cartid="{{../cart._id}}">Eliminar</button></td>
+        </tr>
+        {{/each}}
+        <tr>
+            <td colspan="4"></td>
+            <td style="font-weight: bolder;">Total: $ {{calculateTotal cart.products}}</td>
+        </tr>
+    </tbody>
+</table>
+<form id="purchase-cart" style="padding-top: 50px;display: flex; gap: 40px; justify-content: center;"
+    data-cartid="{{cart._id}}">
     <button type="submit" id="checkout" class="button" style="">Finalizar Compra</button>
 </form>
 {{else}}
@@ -21,3 +43,5 @@
 {{else}}
 <h1 style="color: darkred; display: flex; justify-content: center;">El carrito no existe!</h1>
 {{/if}}
+
+<script src="/js/cart.js"></script>

@@ -1,4 +1,19 @@
-<h1 style="color: darkred;">Perfil del usuario</h1>
-<p><strong>Nombre:</strong> {{first_name}} {{last_name}}</p>
-<p><strong>Email:</strong> {{email}}</p>
-<p><strong>Edad:</strong> {{age}}</p>
+<div class="profile-container">
+    <h1 style="color: darkred;">Perfil del usuario</h1>
+    <div class="profile-details">
+        <p><strong>Nombre:</strong> {{first_name}} {{last_name}}</p>
+        <p><strong>Email:</strong> {{email}}</p>
+        <p><strong>Edad:</strong> {{age}}</p>
+        <p><strong>Rol:</strong> {{role}}</p>
+    </div>
+    <div class="profile-actions">
+        {{#if (eq role "admin") }}
+        <a id="view-users" class="button" style="padding-top: 10px;" href="/users">Ver
+            Usuarios</a>
+        {{else}}
+        <a id="recover-password" class="button" style="padding-top: 10px;" href="/recover-password">Recuperar
+            Contraseña</a>
+        {{/if}}
+        <a id="back-to-products" class="button" style="padding-top: 10px;" href="/products">Volver a Productos</a>
+    </div>
+</div>

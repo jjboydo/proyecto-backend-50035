@@ -71,7 +71,23 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
 app.use('/api/users', usersRouter)
 
 // Handlebars
-app.engine("handlebars", handlebars.engine())
+app.engine("handlebars", handlebars.engine({
+    helpers: {
+        eq: function (arg1, arg2, options) {
+            return arg1 === arg2;
+        },
+        multiply: function (arg1, arg2) {
+            return arg1 * arg2
+        },
+        calculateTotal: function (products) {
+            let total = 0
+            products.forEach(item => {
+                total += item.product.price * item.quantity
+            })
+            return total
+        }
+    }
+}))
 app.set("views", __dirname + "/views")
 app.set("view engine", "handlebars")
 app.use(express.static(__dirname + "/public"))
