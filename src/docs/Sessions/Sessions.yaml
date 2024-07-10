@@ -1,0 +1,318 @@
+paths:
+  /api/sessions/register:
+    post:
+      summary: Registrar un nuevo usuario
+      description: >
+        Este endpoint registra un nuevo usuario en el sistema.
+        Política: Requiere autenticación con Passport usando la estrategia "register". 
+        Redirige a "/failregister" en caso de fallo.
+      tags: 
+        - Sessions
+      responses:
+        '200':
+          description: Usuario registrado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: string
+                    format: uuid
+
+  /api/sessions/failregister:
+    get:
+      summary: Manejar registro fallido
+      description: >
+        Este endpoint maneja el caso de fallo al registrar un usuario.
+        No requiere autenticación.
+      tags: 
+        - Sessions
+      responses:
+        '200':
+          description: Registro fallido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/sessions/login:
+    post:
+      summary: Iniciar sesión
+      description: >
+        Este endpoint permite a un usuario iniciar sesión.
+        Política: Requiere autenticación con Passport usando la estrategia "login".
+        Redirige a "/faillogin" en caso de fallo.
+      tags: 
+        - Sessions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Usuario autenticado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Faltan datos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  error:
+                    type: string
+
+  /api/sessions/faillogin:
+    get:
+      summary: Manejar inicio de sesión fallido
+      description: >
+        Este endpoint maneja el caso de fallo al iniciar sesión.
+        No requiere autenticación.
+      tags: 
+        - Sessions
+      responses:
+        '200':
+          description: Inicio de sesión fallido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/sessions/github:
+    get:
+      summary: Autenticación con GitHub
+      description: >
+        Este endpoint redirige al usuario a la página de autenticación de GitHub.
+        Política: Requiere autenticación con Passport usando la estrategia "github".
+      tags: 
+        - Sessions
+      responses:
+        '302':
+          description: Redirige al usuario a GitHub para autenticación
+
+  /api/sessions/githubcallback:
+    get:
+      summary: Callback de autenticación con GitHub
+      description: >
+        Este endpoint maneja la respuesta de GitHub después de la autenticación.
+        Política: Requiere autenticación con Passport usando la estrategia "github".
+        Redirige a "/login" en caso de fallo.
+      tags: 
+        - Sessions
+      responses:
+        '200':
+          description: Autenticación con GitHub exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/sessions/current:
+    get:
+      summary: Obtener usuario actual
+      description: >
+        Este endpoint obtiene la información del usuario actual.
+        Política: Requiere autenticación con JWT y aplica las políticas ["USER", "USER_PREMIUM"].
+      tags:
+        - Sessions
+      responses:
+        '200':
+          description: Información del usuario actual
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/User'
+
+  /api/sessions/reset-password:
+    post:
+      summary: Recuperar contraseña
+      description: >
+        Este endpoint envía un correo para la recuperación de contraseña.
+        No requiere autenticación.
+      tags: 
+        - Sessions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Correo de recuperación enviado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+
+  /api/sessions/reset-password/{token}:
+    get:
+      summary: Recuperar contraseña usando token
+      description: >
+        Este endpoint maneja el token de recuperación de contraseña.
+        No requiere autenticación.
+      tags: 
+        - Sessions
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirige a la página de restablecimiento de contraseña
+
+  /api/sessions/update-password/{token}:
+    post:
+      summary: Actualizar contraseña
+      description: >
+        Este endpoint actualiza la contraseña del usuario.
+        No requiere autenticación.
+      tags: 
+        - Sessions
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Contraseña actualizada con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        '400':
+          description: Nueva contraseña inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /api/sessions/deleteuser/{uid}:
+    delete:
+      summary: Eliminar usuario
+      description: >
+        Este endpoint elimina un usuario del sistema.
+        No requiere autenticación.
+      tags: 
+        - Sessions
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario eliminado con éxito
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Error al eliminar usuario
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        age:
+          type: integer
+        cart:
+          type: string
+        role:
+          type: string
+        documents:
+          type: array

@@ -1,0 +1,137 @@
+paths:
+  /api/users/premium/{uid}:
+    put:
+      summary: Cambiar rol del usuario
+      description: >
+        Este endpoint permite cambiar el rol de un usuario a premium.
+        Política: Requiere autenticación con JWT y aplica las políticas ["USER", "USER_PREMIUM", "ADMIN"]. Debe tener los documentos de identificación, prueba de domicilio y estado de cuenta cargados.
+      tags:
+        - Users
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rol del usuario cambiado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    $ref: '#/components/schemas/User'
+
+  /api/users/{uid}/documents:
+    post:
+      summary: Cargar documentos del usuario
+      description: >
+        Este endpoint permite cargar varios documentos para un usuario.
+        Política: Requiere autenticación con JWT y aplica las políticas ["USER", "USER_PREMIUM"].
+      tags:
+        - Users
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profileImage:
+                  type: string
+                  format: binary
+                productImage:
+                  type: string
+                  format: binary
+                other:
+                  type: string
+                  format: binary
+                identification:
+                  type: string
+                  format: binary
+                proofOfAddress:
+                  type: string
+                  format: binary
+                proofOfAccountStatus:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Documentos cargados con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: array
+                    items:
+                      type: string
+
+  /api/users/:
+    get:
+      summary: Obtener todos los usuarios
+      description: >
+        Este endpoint devuelve una lista de todos los usuarios.
+        Política: Requiere autenticación con JWT.
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Lista de usuarios obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '500':
+          description: Error al obtener los usuarios
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      summary: Eliminar usuarios inactivos
+      description: >
+        Este endpoint elimina usuarios inactivos del sistema.
+        Política: Requiere autenticación con JWT y aplica la política ["ADMIN"].
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Usuarios inactivos eliminados con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '500':
+          description: Error al eliminar usuarios inactivos
+          content:
+            application/json:
+              schema:
+                type: string

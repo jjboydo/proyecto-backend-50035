@@ -2,7 +2,7 @@ paths:
   /api/products/:
     get:
       summary: Obtener todos los productos
-      description: Devuelve todos los productos de la base de datos
+      description: Devuelve todos los productos de la base de datos. Cuenta con parametros opcionales (limit, sort, page, category, status)
       tags:
         - Products
       responses:
