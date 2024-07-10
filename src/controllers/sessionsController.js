@@ -95,7 +95,7 @@ export const recoverPassword = async (req, res) => {
         to: user.email,
         subject: "Recuperar contraseña",
         html: `<p>Haga click en el siguiente enlace para recuperar la contraseña: </p>
-        <a href="${config.frontendUrl}/api/sessions/reset-password/${token}">Recuperar contraseña</a>`
+        <a href="${config.serverUrl}/api/sessions/reset-password/${token}">Recuperar contraseña</a>`
     }
 
     await mailer.sendMail(mailOptions)
@@ -145,7 +145,7 @@ export const updatePassword = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        const user = await userService.getUserById(req.params.id)
+        const user = await userService.getUserById(req.params.uid)
 
         if (!user) {
             return res.status(404).send('User not found')
