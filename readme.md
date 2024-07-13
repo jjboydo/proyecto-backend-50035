@@ -59,7 +59,7 @@ En el directorio `utils` se encuentran varias funciones de ayuda, como la config
 
 ## Postman
 
-Puede importar la colección de Postman con los endpoints de la API mediante el siguiente enlace: 
+Puede importar la colección de Postman con los endpoints de la API mediante el siguiente enlace: [text](https://www.postman.com/supply-astronaut-88236488/workspace/coderspace/collection/32342968-68c7fae5-dc79-4717-a62c-d545d6eb2b13?action=share&source=copy-link&creator=32342968)
 
 ## Documentación
 
